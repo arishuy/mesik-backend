@@ -18,5 +18,6 @@ router.use("/playlists", playlistRoute);
 router.use("/artists", artistRoute);
 router.use("/albums", albumRoute);
 router.use("/genres", genreRoute);
+router.use("/artists", artistRoute);
 
 export default router;

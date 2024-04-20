@@ -1,16 +1,54 @@
-import handlerFactory from "./handlerFactory.js";
-import Artist from "../models/Artist.js";
+import artistService from "../services/artistService.js";
 
-const createArtist = handlerFactory.createOne(Artist);
-const getAllArtists = handlerFactory.getAll(Artist);
-const getArtistById = handlerFactory.getOne(Artist);
-const updateArtist = handlerFactory.updateOne(Artist);
-const deleteArtist = handlerFactory.deleteOne(Artist);
+const createArtist = async (req, res, next) => {
+  try {
+    const { name, description } = req.body;
+    const artist = await artistService.createArtist({
+      name,
+      description,
+    });
+    res.json({ artist });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getArtistById = async (req, res, next) => {
+  try {
+    const { artist_id } = req.params;
+    const artist = await artistService.fetchArtistById(artist_id);
+
+    res.json({ artist });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getArtists = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    const pagination = await artistService.fetchArtists(page, limit);
+
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteArtist = async (req, res, next) => {
+  try {
+    const { artist_id } = req.params;
+    await artistService.deleteArtistById(artist_id);
+
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default {
   createArtist,
-  getAllArtists,
+  getArtists,
   getArtistById,
-  updateArtist,
   deleteArtist,
 };

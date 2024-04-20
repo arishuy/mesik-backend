@@ -1,16 +1,54 @@
-import handlerFactory from "./handlerFactory.js";
-import Genre from "../models/Genre.js";
+import genreService from "../services/genreService.js";
 
-const createGenre = handlerFactory.createOne(Genre);
-const getAllGenres = handlerFactory.getAll(Genre);
-const getGenreById = handlerFactory.getOne(Genre);
-const updateGenre = handlerFactory.updateOne(Genre);
-const deleteGenre = handlerFactory.deleteOne(Genre);
+const createGenre = async (req, res, next) => {
+  try {
+    const { name, description } = req.body;
+    const genre = await genreService.createGenre({
+      name,
+      description,
+    });
+    res.json({ genre });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getGenreById = async (req, res, next) => {
+  try {
+    const { genre_id } = req.params;
+    const genre = await genreService.fetchGenreById(genre_id);
+
+    res.json({ genre });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getGenres = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    const pagination = await genreService.fetchGenres(page, limit);
+
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteGenre = async (req, res, next) => {
+  try {
+    const { genre_id } = req.params;
+    await genreService.deleteGenreById(genre_id);
+
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default {
   createGenre,
-  getAllGenres,
+  getGenres,
   getGenreById,
-  updateGenre,
   deleteGenre,
 };

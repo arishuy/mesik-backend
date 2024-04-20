@@ -1,4 +1,4 @@
-import { User, Major, ExpertInfo } from "../models/index.js";
+import { User, Major, ExpertInfo, Artist } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
@@ -137,6 +137,24 @@ const promoteToExpert = async ({ user_id, descriptions }) => {
   return expertInfo;
 };
 
+const promoteToArtist = async ({ user_id, descriptions }) => {
+  let user = User.findById(user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  let artist = await Artist.create({
+    user: user_id,
+    descriptions: descriptions,
+    albums: [],
+    songs: [],
+  });
+  await user.updateOne({
+    role: roles.ARTIST,
+  });
+  await artist.populate("user", "first_name last_name role");
+  return artist;
+};
+
 const enableUserById = async (user_id) => {
   const user = await User.findByIdAndUpdate(
     user_id,
@@ -191,6 +209,7 @@ export default {
   updateUserInfo,
   initAdmin,
   promoteToExpert,
+  promoteToArtist,
   enableUserById,
   disableUserById,
   confirmUserById,

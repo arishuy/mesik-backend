@@ -2,13 +2,17 @@ import songService from "../services/songService.js";
 
 const createSong = async (req, res, next) => {
   try {
-    const { title, year, duration, file, thumbnail, play_count } = req.body;
+    const { title, year, duration, genre_id, artist_id, play_count } = req.body;
+    const photo = req.files.photo[0];
+    const file = req.files.file[0].buffer;
     const song = await songService.createSong({
       title,
       year,
       duration,
+      genre_id,
+      artist_id,
       file,
-      thumbnail,
+      photo,
       play_count,
     });
     res.json({ song });
@@ -50,9 +54,19 @@ const deleteSong = async (req, res, next) => {
   }
 };
 
+const fetch5SongsRelease = async (req, res, next) => {
+  try {
+    const result = await songService.fetch5SongsRelease();
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSong,
   getSongs,
   getSongById,
   deleteSong,
+  fetch5SongsRelease,
 };

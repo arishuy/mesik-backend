@@ -1,12 +1,23 @@
 import express from "express";
-import genreController from "../controllers/genreController.js";
+import { auth, checkRole } from "../middlewares/authorization.js";
+import { roles } from "../config/constant.js";
+import controller from "../controllers/genreController.js";
 
 const router = express.Router();
 
-router.post("/", genreController.createGenre);
-router.get("/", genreController.getAllGenres);
-router.get("/:id", genreController.getGenreById);
-router.put("/:id", genreController.updateGenre);
-router.delete("/:id", genreController.deleteGenre);
+router.post("", auth, checkRole([roles.ADMIN]), controller.createGenre);
+router.get("", auth, checkRole([roles.ADMIN]), controller.getGenres);
+router.get(
+  "/:genre_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.getGenreById
+);
+router.delete(
+  "/:genre_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.deleteGenre
+);
 
 export default router;
