@@ -45,4 +45,37 @@ const uploadDocument = multer({
   },
 });
 
-export { uploadImage, uploadDocument };
+const uploadMulti = multer({
+  storage,
+  limits: { fieldSize: 25 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === "file") {
+      if (file.mimetype == "audio/mpeg" || file.mimetype == "audio/mp3") {
+        cb(null, true);
+      } else {
+        cb(null, false);
+        return cb(
+          new ApiError(httpStatus.BAD_REQUEST, "Only .mp3 format allowed!")
+        );
+      }
+    } else if (file.fieldname === "photo") {
+      if (
+        file.mimetype == "image/png" ||
+        file.mimetype == "image/jpg" ||
+        file.mimetype == "image/jpeg"
+      ) {
+        cb(null, true);
+      } else {
+        cb(null, false);
+        return cb(
+          new ApiError(
+            httpStatus.BAD_REQUEST,
+            "Only .png, .jpg and .jpeg format allowed!"
+          )
+        );
+      }
+    }
+  },
+});
+
+export { uploadImage, uploadDocument, uploadMulti };

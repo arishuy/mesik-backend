@@ -9,7 +9,8 @@ const songSchema = new mongoose.Schema(
     year: { type: Number },
     duration: { type: Number },
     file: { type: String }, // Path to the file on the server
-    thumbnail: { type: String }, // Path to the thumbnail
+    photo_url: { type: String },
+    photo_public_id: { type: String },
     play_count: { type: Number, default: 0 },
   },
   {

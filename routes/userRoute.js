@@ -32,6 +32,12 @@ router.post(
   checkRole([roles.USER]),
   controller.promoteToExpert
 );
+router.post(
+  "/current/promote-to-artist",
+  auth,
+  checkRole([roles.USER]),
+  controller.promoteToArtist
+);
 router.get(
   "/current/job_requests",
   auth,

@@ -85,7 +85,19 @@ const promoteToExpert = async (req, res, next) => {
     next(error);
   }
 };
-
+const promoteToArtist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { descriptions } = req.body;
+    const expert = await userService.promoteToArtist({
+      user_id,
+      descriptions,
+    });
+    res.json({ expert });
+  } catch (error) {
+    next(error);
+  }
+};
 const enableUser = async (req, res, next) => {
   try {
     const user_id = req.params.user_id;
@@ -203,6 +215,7 @@ export default {
   getCurrentUserInfo,
   updateUserInfo,
   promoteToExpert,
+  promoteToArtist,
   enableUser,
   disableUser,
   updateUserInfoById,

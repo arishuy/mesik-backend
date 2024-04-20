@@ -1,20 +1,46 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const artistSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    about: { type: String, required: true },
-    gerne: { type: mongoose.Schema.Types.ObjectId, ref: "Genre" },
-    country: { type: String, required: true },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      index: true,
+      unique: true,
+    },
+    descriptions: String,
+    albums: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          ref: "Album",
+          index: true,
+        },
+      ],
+      default: [],
+    },
+    songs: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          ref: "Song",
+          index: true,
+        },
+      ],
+      default: [],
+    },
   },
   {
+    collection: "artists",
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
   }
 );
 
 artistSchema.plugin(mongoosePaginate);
+artistSchema.plugin(aggregatePaginate);
+
 const Artist = mongoose.model("Artist", artistSchema);
+
 export default Artist;
