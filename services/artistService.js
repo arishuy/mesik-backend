@@ -15,6 +15,14 @@ const fetchArtistById = async (artist_id) => {
   return artist;
 };
 
+const fetch5Artists = async () => {
+  const artists = await Artist.find()
+    .limit(5)
+    .sort({ createdAt: -1 })
+    .populate("user", "first_name last_name photo_url");
+  return artists;
+};
+
 const fetchArtists = async (page = 1, limit = 10) => {
   const pagination = await Artist.paginate(
     {},
@@ -44,6 +52,7 @@ const deleteArtistById = async (artist_id) => {
 export default {
   createArtist,
   fetchArtists,
+  fetch5Artists,
   fetchArtistById,
   deleteArtistById,
 };

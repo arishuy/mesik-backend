@@ -5,6 +5,8 @@ const albumSchema = new mongoose.Schema(
     artist: { type: mongoose.Schema.Types.ObjectId, ref: "Artist" }, // Reference Artist model
     title: { type: String, required: true },
     songs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }], // Array of Song IDs
+    photo_url: String,
+    photo_public_id: String,
   },
   {
     timestamps: true,

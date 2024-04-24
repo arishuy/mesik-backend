@@ -24,6 +24,14 @@ const getArtistById = async (req, res, next) => {
   }
 };
 
+const get5Artists = async (req, res, next) => {
+  try {
+    const artists = await artistService.fetch5Artists();
+    res.json({ artists });
+  } catch (error) {
+    next(error);
+  }
+};
 const getArtists = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
@@ -51,4 +59,5 @@ export default {
   getArtists,
   getArtistById,
   deleteArtist,
+  get5Artists,
 };
