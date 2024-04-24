@@ -4,6 +4,7 @@ import confirmationUserService from "../services/confirmationUserService.js";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import dotenv from "dotenv";
+import Artist from "../models/Artist.js";
 
 dotenv.config();
 
@@ -30,11 +31,16 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
+    let artist = null;
     const { username, password } = req.body;
     const user = await authService.fetchUserByUsernameAndPassword({
       username,
       password,
     });
+    if (user.role === "ARTIST") {
+      artist = await Artist.findOne({ user: user._id });
+      user.artist = artist._id;
+    }
     await authService.updateLastLoginTime(user._id);
     const tokens = await tokenService.generateAuthTokens(user);
     res.json({
@@ -93,7 +99,7 @@ const resetPassword = async (req, res, next) => {
 
 const oAuth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
+  process.env.CLIENT_SECRET
 );
 
 const verifyGoogleToken = async (token) => {
@@ -134,5 +140,5 @@ export default {
   refreshToken,
   activate,
   resetPassword,
-  googleLogin
+  googleLogin,
 };

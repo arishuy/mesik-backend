@@ -70,10 +70,64 @@ const deleteSongById = async (song_id) => {
   await Song.deleteOne({ _id: song_id });
 };
 
-const fetch5SongsRelease = async () => {
+const fetch6SongsRelease = async () => {
   const songs = await Song.find({})
     .sort({ createdAt: -1 })
-    .limit(4)
+    .limit(6)
+    .lean()
+    .populate({
+      path: "artist",
+      select: "user",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    });
+  return songs;
+};
+
+const fetchRandomSongs = async () => {
+  const songs = await Song.aggregate([
+    { $sample: { size: 6 } }, // Lấy ngẫu nhiên 6 bản ghi
+    {
+      $lookup: {
+        from: "artists", // Tên của collection chứa thông tin về nghệ sĩ
+        localField: "artist", // Trường trong collection hiện tại để join
+        foreignField: "_id", // Trường trong collection artist để join
+        as: "artist", // Tên biến mới sau khi join
+      },
+    },
+    { $unwind: "$artist" }, // Giải nén mảng sau khi join
+    {
+      $lookup: {
+        from: "users", // Tên của collection chứa thông tin về users
+        localField: "artist.user", // Trường trong artist để join
+        foreignField: "_id", // Trường trong collection user để join
+        as: "artist.user", // Tên biến mới sau khi join
+      },
+    },
+    { $unwind: "$artist.user" }, // Giải nén mảng sau khi join
+    {
+      $project: {
+        title: 1, // Chỉ giữ lại trường title
+        photo_url: 1, // Chỉ giữ lại trường photo_url
+        file: 1, // Chỉ giữ lại trường file
+        artist: {
+          user: {
+            first_name: 1,
+            last_name: 1,
+            photo_url: 1,
+          },
+        },
+      },
+    },
+  ]);
+
+  return songs;
+};
+
+const fetchSongByArtist = async (artist_id) => {
+  const songs = await Song.find({ artist: artist_id })
     .lean()
     .populate({
       path: "artist",
@@ -91,5 +145,7 @@ export default {
   fetchSongs,
   fetchSongById,
   deleteSongById,
-  fetch5SongsRelease,
+  fetch6SongsRelease,
+  fetchRandomSongs,
+  fetchSongByArtist,
 };

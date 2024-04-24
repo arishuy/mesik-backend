@@ -56,7 +56,26 @@ const deleteSong = async (req, res, next) => {
 
 const fetch5SongsRelease = async (req, res, next) => {
   try {
-    const result = await songService.fetch5SongsRelease();
+    const result = await songService.fetch6SongsRelease();
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const fetchRandomSongs = async (req, res, next) => {
+  try {
+    const result = await songService.fetchRandomSongs();
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const fetchSongByArtist = async (req, res, next) => {
+  try {
+    const { artist_id } = req.params;
+    const result = await songService.fetchSongByArtist(artist_id);
     res.json({ result });
   } catch (error) {
     next(error);
@@ -69,4 +88,6 @@ export default {
   getSongById,
   deleteSong,
   fetch5SongsRelease,
+  fetchRandomSongs,
+  fetchSongByArtist,
 };
