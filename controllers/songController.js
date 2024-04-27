@@ -82,6 +82,17 @@ const fetchSongByArtist = async (req, res, next) => {
   }
 };
 
+const incresasePlayCount = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { id } = req.body;
+    const result = await songService.incresasePlayCount(user_id, id);
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSong,
   getSongs,
@@ -90,4 +101,5 @@ export default {
   fetch5SongsRelease,
   fetchRandomSongs,
   fetchSongByArtist,
+  incresasePlayCount,
 };

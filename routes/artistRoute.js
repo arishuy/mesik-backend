@@ -6,7 +6,7 @@ const router = express.Router();
 router.get("/top-5-artist", artistController.get5Artists);
 router.post("/", artistController.createArtist);
 router.get("/", artistController.getArtists);
-router.get("/:id", artistController.getArtistById);
-router.delete("/:id", artistController.deleteArtist);
+router.get("/:artist_id", artistController.getArtistById);
+router.delete("/:artist_id", artistController.deleteArtist);
 
 export default router;

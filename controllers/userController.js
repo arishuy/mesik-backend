@@ -208,6 +208,16 @@ const updateSeenNotification = async (req, res, next) => {
   }
 };
 
+const getHistoryListen = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const songs = await userService.getHistoryListen(user_id);
+    res.json({ songs });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -225,4 +235,5 @@ export default {
   getCurrentUserTransactions,
   getCurrentUserNotifications,
   updateSeenNotification,
+  getHistoryListen,
 };

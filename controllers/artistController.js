@@ -17,7 +17,6 @@ const getArtistById = async (req, res, next) => {
   try {
     const { artist_id } = req.params;
     const artist = await artistService.fetchArtistById(artist_id);
-
     res.json({ artist });
   } catch (error) {
     next(error);

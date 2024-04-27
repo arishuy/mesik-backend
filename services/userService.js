@@ -6,7 +6,7 @@ import { userMapper } from "./mapper/userMapper.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { roles } from "../config/constant.js";
 
-import dotenv from "dotenv";
+import dotenv, { populate } from "dotenv";
 
 dotenv.config();
 
@@ -202,6 +202,27 @@ const deleteUserById = async (user_id) => {
   await user.delete();
 };
 
+const getHistoryListen = async (user_id) => {
+  const user = await User.findById(user_id)
+    .populate({
+      path: "history_listen",
+      select: "title photo_url file play_count artist",
+      populate: {
+        path: "artist",
+        select: "user",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    })
+    .limit(6);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  return user.history_listen;
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -214,4 +235,5 @@ export default {
   disableUserById,
   confirmUserById,
   deleteUserById,
+  getHistoryListen,
 };

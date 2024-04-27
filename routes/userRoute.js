@@ -11,6 +11,12 @@ const router = express.Router();
 
 router.get("", auth, checkRole([roles.ADMIN]), controller.getUsersPagination);
 router.get("/current", auth, controller.getCurrentUserInfo);
+router.get(
+  "/current/history-listen",
+  auth,
+  checkRole([roles.ADMIN, roles.USER, roles.ARTIST]),
+  controller.getHistoryListen
+);
 router.put(
   "/current",
   auth,
