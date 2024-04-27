@@ -17,6 +17,12 @@ router.post(
   checkRole([roles.ADMIN, roles.USER, roles.ARTIST]),
   controller.addSongToPlaylist
 );
+router.post(
+  "/remove-song",
+  auth,
+  checkRole([roles.ADMIN, roles.USER, roles.ARTIST]),
+  controller.removeSongFromPlaylist
+);
 router.get(
   "/current",
   auth,
@@ -33,7 +39,7 @@ router.get(
 router.delete(
   "/:playlist_id",
   auth,
-  checkRole([roles.ADMIN]),
+  checkRole([roles.ADMIN, roles.USER, roles.ARTIST]),
   controller.deletePlaylist
 );
 

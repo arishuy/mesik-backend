@@ -51,7 +51,18 @@ const deletePlaylistById = async (playlist_id, user_id) => {
 };
 
 const fetchPlaylistByUser = async (user_id) => {
-  const playlists = await Playlist.find({ user: user_id })
+  const playlists = await Playlist.find({ user: user_id }).populate({
+    path: "songs",
+    select: "title artist photo_url duration file",
+    populate: {
+      path: "artist",
+      select: "user",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    },
+  });
   return playlists;
 };
 
@@ -64,6 +75,17 @@ const addSongToPlaylist = async (playlist_id, song_id, user_id) => {
   await playlist.save();
 };
 
+const removeSongFromPlaylist = async (playlist_id, song_id, user_id) => {
+  const playlist = await Playlist.findById(playlist_id);
+  if (playlist.user.toString() !== user_id.toString()) {
+    throw new Error("Unauthorized");
+  }
+  playlist.songs = playlist.songs.filter(
+    (song) => song.toString() !== song_id.toString()
+  );
+  await playlist.save();
+};
+
 export default {
   createPlaylist,
   fetchPlaylists,
@@ -71,4 +93,5 @@ export default {
   deletePlaylistById,
   fetchPlaylistByUser,
   addSongToPlaylist,
+  removeSongFromPlaylist,
 };
