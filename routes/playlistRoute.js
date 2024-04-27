@@ -27,7 +27,7 @@ router.get("", auth, checkRole([roles.ADMIN]), controller.getPlaylists);
 router.get(
   "/:playlist_id",
   auth,
-  checkRole([roles.ADMIN]),
+  checkRole([roles.ADMIN, roles.USER, roles.ARTIST]),
   controller.getPlaylistById
 );
 router.delete(
