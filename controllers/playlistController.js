@@ -1,16 +1,78 @@
-import handlerFactory from "./handlerFactory.js";
-import Playlist from "../models/Playlist.js";
+import playlistService from "../services/playlistService.js";
 
-const createPlaylist = handlerFactory.createOne(Playlist);
-const getAllPlaylists = handlerFactory.getAll(Playlist);
-const getPlaylistById = handlerFactory.getOne(Playlist);
-const updatePlaylist = handlerFactory.updateOne(Playlist);
-const deletePlaylist = handlerFactory.deleteOne(Playlist);
+const createPlaylist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { title } = req.body;
+    const playlist = await playlistService.createPlaylist({
+      title,
+      user_id,
+    });
+    res.json({ playlist });
+  } catch (error) {
+    next(error);
+  }
+};
 
+const getPlaylistById = async (req, res, next) => {
+  try {
+    const { playlist_id } = req.params;
+    const playlist = await playlistService.fetchPlaylistById(playlist_id);
+
+    res.json({ playlist });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getPlaylists = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    const pagination = await playlistService.fetchPlaylists(page, limit);
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deletePlaylist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { playlist_id } = req.params;
+    await playlistService.deletePlaylistById(playlist_id, user_id);
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getPlaylistByUser = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const playlists = await playlistService.fetchPlaylistByUser(user_id);
+
+    res.json({ playlists });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const addSongToPlaylist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { playlist_id, song_id } = req.body;
+    await playlistService.addSongToPlaylist(playlist_id, song_id, user_id);
+
+    res.json({ message: "Added" });
+  } catch (error) {
+    next(error);
+  }
+};
 export default {
   createPlaylist,
-  getAllPlaylists,
+  getPlaylists,
   getPlaylistById,
-  updatePlaylist,
   deletePlaylist,
+  getPlaylistByUser,
+  addSongToPlaylist,
 };

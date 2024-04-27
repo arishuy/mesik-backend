@@ -1,5 +1,4 @@
-import { populate } from "dotenv";
-import { Artist } from "../models/index.js";
+import { Artist, Song, Album } from "../models/index.js";
 
 const createArtist = async ({ name, description }) => {
   const artist = await Artist.create({
@@ -11,13 +10,42 @@ const createArtist = async ({ name, description }) => {
 };
 
 const fetchArtistById = async (artist_id) => {
-  const artist = await Artist.findById(artist_id);
+  const artist = await Artist.findById(artist_id).populate({
+    path: "user",
+    select: "first_name last_name photo_url",
+  });
+  artist.albums = await Album.find({ artist: artist_id })
+    .populate({
+      path: "songs",
+      select: "title photo_url file duration artist",
+      populate: {
+        path: "artist",
+        select: "user",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    })
+    .limit(6);
+  artist.songs = await Song.find({ artist: artist_id })
+    .populate({
+      path: "artist",
+      select: "user",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    })
+    .sort({ play_count: -1 })
+    .limit(6);
+
   return artist;
 };
 
 const fetch5Artists = async () => {
   const artists = await Artist.find()
-    .limit(5)
+    .limit(6)
     .sort({ createdAt: -1 })
     .populate("user", "first_name last_name photo_url");
   return artists;

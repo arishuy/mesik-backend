@@ -11,6 +11,12 @@ router.get("/artist/:artist_id", controller.fetchSongByArtist);
 router.get("/release", controller.fetch5SongsRelease);
 router.get("/random", controller.fetchRandomSongs);
 router.post(
+  "/play",
+  auth,
+  checkRole([roles.USER, roles.ARTIST, roles.ADMIN]),
+  controller.incresasePlayCount
+);
+router.post(
   "",
   auth,
   checkRole([roles.ADMIN]),

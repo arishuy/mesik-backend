@@ -1,4 +1,4 @@
-import { Song } from "../models/index.js";
+import { Song, User } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
 
@@ -111,7 +111,9 @@ const fetchRandomSongs = async () => {
       $project: {
         title: 1, // Chỉ giữ lại trường title
         photo_url: 1, // Chỉ giữ lại trường photo_url
+        play_count: 1, // Chỉ giữ lại trường play_count
         file: 1, // Chỉ giữ lại trường file
+        duration: 1, // Chỉ giữ lại trường duration
         artist: {
           user: {
             first_name: 1,
@@ -140,6 +142,40 @@ const fetchSongByArtist = async (artist_id) => {
   return songs;
 };
 
+const incresasePlayCount = async (user_id, song_id) => {
+  // Fetch user data
+  const user = await User.findById(user_id);
+
+  // Check if the song is already in the history_listen array
+  const songIndex = user.history_listen.indexOf(song_id);
+  if (songIndex !== -1) {
+    // Remove the song from its current position
+    user.history_listen.splice(songIndex, 1);
+    user.history_listen.push(song_id);
+  } else {
+    // Remove the oldest song if history_listen is at max length
+    if (user.history_listen.length === 6) {
+      user.history_listen.shift();
+    }
+    // If song is not in history, add it
+    user.history_listen.push(song_id);
+  }
+
+  // Update user's history_listen array
+  await User.findByIdAndUpdate(user_id, {
+    $set: { history_listen: user.history_listen },
+  });
+
+  // Update song's play count
+  const song = await Song.findByIdAndUpdate(
+    song_id,
+    { $inc: { play_count: 1 } },
+    { new: true } // Returns the modified document
+  );
+
+  return song;
+};
+
 export default {
   createSong,
   fetchSongs,
@@ -148,4 +184,5 @@ export default {
   fetch6SongsRelease,
   fetchRandomSongs,
   fetchSongByArtist,
+  incresasePlayCount,
 };

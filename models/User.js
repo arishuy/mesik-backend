@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
     username: { type: String, index: true },
     encrypted_password: String,
     reset_password: String,
+    history_listen: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
     role: {
       type: String,
       enum: Object.values(roles),
