@@ -115,6 +115,7 @@ const fetchRandomSongs = async () => {
         file: 1, // Chỉ giữ lại trường file
         duration: 1, // Chỉ giữ lại trường duration
         artist: {
+          _id: "$artist._id", // Chỉ giữ lại trường _id
           user: {
             first_name: 1,
             last_name: 1,
