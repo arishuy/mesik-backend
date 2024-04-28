@@ -27,6 +27,17 @@ router.post(
   trimRequest.all,
   controller.createSong
 );
+router.post(
+  "/upload-by-artist",
+  auth,
+  checkRole([roles.ARTIST]),
+  uploadMulti.fields([
+    { name: "file", maxCount: 1 },
+    { name: "photo", maxCount: 1 },
+  ]),
+  trimRequest.all,
+  controller.createSongByArtist
+);
 router.get("", auth, checkRole([roles.ADMIN]), controller.getSongs);
 router.get("/:song_id", auth, checkRole([roles.ADMIN]), controller.getSongById);
 router.delete(

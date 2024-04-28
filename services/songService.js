@@ -1,4 +1,4 @@
-import { Song, User } from "../models/index.js";
+import { Song, User, Artist } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
 
@@ -12,6 +12,43 @@ const createSong = async ({
   photo,
   play_count = 0,
 }) => {
+  let response;
+  let link;
+  if (file) {
+    link = await uploadAudio(title, file);
+  }
+  if (photo) {
+    response = await cloudinaryService.upload(photo);
+  }
+  const song = await Song.create({
+    title: title,
+    year: year,
+    duration: duration,
+    file: link,
+    genre: genre_id,
+    artist: artist_id,
+    photo_url: response ? response.url : null,
+    photo_public_id: response ? response.public_id : null,
+    play_count: play_count,
+  });
+
+  return song;
+};
+
+const createSongByArtist = async ({
+  title,
+  year,
+  duration,
+  genre_id,
+  user_id,
+  file = "",
+  photo,
+  play_count = 0,
+}) => {
+  const artist_id = await Artist.findOne({ user: user_id }).select("_id");
+  if (!artist_id) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User is not an artist");
+  }
   let response;
   let link;
   if (file) {
@@ -179,6 +216,7 @@ const incresasePlayCount = async (user_id, song_id) => {
 
 export default {
   createSong,
+  createSongByArtist,
   fetchSongs,
   fetchSongById,
   deleteSongById,

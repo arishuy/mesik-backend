@@ -21,6 +21,28 @@ const createSong = async (req, res, next) => {
   }
 };
 
+const createSongByArtist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { title, year, duration, genre_id, play_count } = req.body;
+    const photo = req.files.photo[0];
+    const file = req.files.file[0].buffer;
+    const song = await songService.createSongByArtist({
+      title,
+      year,
+      duration,
+      genre_id,
+      user_id,
+      file,
+      photo,
+      play_count,
+    });
+    res.json({ song });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getSongById = async (req, res, next) => {
   try {
     const { song_id } = req.params;
@@ -95,6 +117,7 @@ const incresasePlayCount = async (req, res, next) => {
 
 export default {
   createSong,
+  createSongByArtist,
   getSongs,
   getSongById,
   deleteSong,
