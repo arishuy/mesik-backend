@@ -12,7 +12,7 @@ const uploadAudio = (filename, file) => {
   return new Promise((resolve, reject) => {
     const params = {
       Key: filename,
-      Bucket: "mesickaudio",
+      Bucket: "mesikaudio",
       Body: file,
       ContentType: "audio/mpeg",
       ACL: "public-read",
