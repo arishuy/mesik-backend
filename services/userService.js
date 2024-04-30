@@ -1,4 +1,4 @@
-import { User, Major, ExpertInfo, Artist } from "../models/index.js";
+import { User, Major, ExpertInfo, Artist, Listening } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
@@ -217,6 +217,9 @@ const getHistoryListen = async (user_id) => {
       },
     })
     .limit(6);
+  for (let song of user.history_listen) {
+    song.play_count = await Listening.countDocuments({ song: song._id });
+  }
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }

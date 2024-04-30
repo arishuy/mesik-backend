@@ -1,4 +1,4 @@
-import { Song, User, Artist } from "../models/index.js";
+import { Song, User, Artist, Listening } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
 
@@ -74,6 +74,8 @@ const createSongByArtist = async ({
 
 const fetchSongById = async (song_id) => {
   const song = await Song.findById(song_id);
+  const playCount = await Listening.countDocuments({ song: song_id });
+  song.play_count = playCount;
   return song;
 };
 
@@ -100,6 +102,10 @@ const fetchSongs = async (page = 1, limit = 10) => {
       },
     }
   );
+  for (const song of pagination.songs) {
+    const playCount = await Listening.countDocuments({ song: song._id });
+    song.play_count = playCount;
+  }
   return pagination;
 };
 
@@ -120,6 +126,10 @@ const fetch6SongsRelease = async () => {
         select: "first_name last_name photo_url",
       },
     });
+
+  for (const song of songs)
+    song.play_count = await Listening.countDocuments({ song: song._id });
+
   return songs;
 };
 
@@ -163,6 +173,9 @@ const fetchRandomSongs = async () => {
     },
   ]);
 
+  for (const song of songs)
+    song.play_count = await Listening.countDocuments({ song: song._id });
+
   return songs;
 };
 
@@ -177,6 +190,9 @@ const fetchSongByArtist = async (artist_id) => {
         select: "first_name last_name photo_url",
       },
     });
+
+  for (const song of songs)
+    song.play_count = await Listening.countDocuments({ song: song._id });
   return songs;
 };
 
@@ -205,14 +221,14 @@ const incresasePlayCount = async (user_id, song_id) => {
   });
 
   // Update song's play count
-  const song = await Song.findByIdAndUpdate(
-    song_id,
-    { $inc: { play_count: 1 } },
-    { new: true } // Returns the modified document
-  );
-
-  return song;
+  const listening = await Listening.create({
+    user: user_id,
+    song: song_id,
+  });
+  return listening;
 };
+
+
 
 export default {
   createSong,

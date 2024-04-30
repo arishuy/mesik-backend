@@ -18,6 +18,8 @@ import Album from "./Album.js";
 import Artist from "./Artist.js";
 import Playlist from "./Playlist.js";
 import Genre from "./Genre.js";
+import Listening from "./Listening.js";
+import Ranking from "./Ranking.js";
 
 export {
   Certificate,
@@ -40,4 +42,6 @@ export {
   Artist,
   Playlist,
   Genre,
+  Listening,
+  Ranking,
 };
