@@ -1,7 +1,6 @@
 import { Song, User, Artist, Listening } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
-
 const createSong = async ({
   title,
   year,
@@ -15,7 +14,9 @@ const createSong = async ({
   let response;
   let link;
   if (file) {
-    link = await uploadAudio(title, file);
+    // name = title + current timestamp
+    const name = title + Date.now();
+    link = await uploadAudio(name, file);
   }
   if (photo) {
     response = await cloudinaryService.upload(photo);
@@ -52,7 +53,8 @@ const createSongByArtist = async ({
   let response;
   let link;
   if (file) {
-    link = await uploadAudio(title, file);
+    const name = title + Date.now();
+    link = await uploadAudio(name, file);
   }
   if (photo) {
     response = await cloudinaryService.upload(photo);
@@ -227,8 +229,6 @@ const incresasePlayCount = async (user_id, song_id) => {
   });
   return listening;
 };
-
-
 
 export default {
   createSong,

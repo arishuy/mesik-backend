@@ -1,4 +1,4 @@
-import { Artist, Song, Album } from "../models/index.js";
+import { Artist, Song, Album, Listening } from "../models/index.js";
 
 const createArtist = async ({ name, description }) => {
   const artist = await Artist.create({
@@ -28,17 +28,18 @@ const fetchArtistById = async (artist_id) => {
       },
     })
     .limit(6);
-  artist.songs = await Song.find({ artist: artist_id })
-    .populate({
-      path: "artist",
-      select: "user",
-      populate: {
-        path: "user",
-        select: "first_name last_name photo_url",
-      },
-    })
-    .sort({ play_count: -1 })
-    .limit(6);
+  const songs = await Song.find({ artist: artist_id }).populate({
+    path: "artist",
+    select: "user",
+    populate: {
+      path: "user",
+      select: "first_name last_name photo_url",
+    },
+  });
+  for (const song of songs)
+    song.play_count = await Listening.countDocuments({ song: song._id });
+
+  artist.songs = songs.sort((a, b) => b.play_count - a.play_count).slice(0, 6);
 
   return artist;
 };
@@ -46,7 +47,7 @@ const fetchArtistById = async (artist_id) => {
 const fetch5Artists = async () => {
   const artists = await Artist.find()
     .limit(6)
-    .sort({ createdAt: -1 })
+    .sort({ follower: -1 })
     .populate("user", "first_name last_name photo_url");
   return artists;
 };

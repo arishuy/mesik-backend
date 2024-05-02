@@ -31,6 +31,16 @@ const artistSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    followers: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          ref: "User",
+          index: true,
+        },
+      ],
+      default: [],
+    },
   },
   {
     collection: "artists",
