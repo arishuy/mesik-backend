@@ -137,7 +137,11 @@ const promoteToExpert = async ({ user_id, descriptions }) => {
   return expertInfo;
 };
 
-const promoteToArtist = async ({ user_id, descriptions }) => {
+const promoteToArtist = async ({
+  user_id,
+  descriptions,
+  display_name = "",
+}) => {
   let user = User.findById(user_id);
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
@@ -145,6 +149,8 @@ const promoteToArtist = async ({ user_id, descriptions }) => {
   let artist = await Artist.create({
     user: user_id,
     descriptions: descriptions,
+    display_name:
+      display_name === "" ? user.first_name + user.last_name : display_name,
     albums: [],
     songs: [],
   });
@@ -209,7 +215,7 @@ const getHistoryListen = async (user_id) => {
       select: "title photo_url file play_count artist",
       populate: {
         path: "artist",
-        select: "user",
+        select: "user display_name",
         populate: {
           path: "user",
           select: "first_name last_name photo_url",

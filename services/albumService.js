@@ -22,7 +22,7 @@ const fetchAlbumById = async (album_id) => {
     select: "title photo_url file duration artist createdAt",
     populate: {
       path: "artist",
-      select: "user",
+      select: "user display_name",
       populate: {
         path: "user",
         select: "first_name last_name photo_url",
@@ -37,7 +37,7 @@ const fetchAlbumByArtist = async (artist_id) => {
     select: "title photo_url file duration artist",
     populate: {
       path: "artist",
-      select: "user",
+      select: "user display_name",
       populate: {
         path: "user",
         select: "first_name last_name photo_url",

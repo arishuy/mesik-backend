@@ -16,7 +16,7 @@ const fetchPlaylistById = async (playlist_id) => {
     select: "title artist photo_url duration file",
     populate: {
       path: "artist",
-      select: "user",
+      select: "user display_name",
       populate: {
         path: "user",
         select: "first_name last_name photo_url",
@@ -56,7 +56,7 @@ const fetchPlaylistByUser = async (user_id) => {
     select: "title artist photo_url duration file",
     populate: {
       path: "artist",
-      select: "user",
+      select: "user display_name",
       populate: {
         path: "user",
         select: "first_name last_name photo_url",

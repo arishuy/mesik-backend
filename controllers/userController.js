@@ -88,10 +88,11 @@ const promoteToExpert = async (req, res, next) => {
 const promoteToArtist = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { descriptions } = req.body;
+    const { descriptions, display_name } = req.body;
     const expert = await userService.promoteToArtist({
       user_id,
       descriptions,
+      display_name,
     });
     res.json({ expert });
   } catch (error) {

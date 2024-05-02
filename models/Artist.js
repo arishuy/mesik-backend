@@ -31,6 +31,10 @@ const artistSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    display_name: {
+      type: String,
+      required: true,
+    },
     followers: {
       type: [
         {

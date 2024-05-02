@@ -30,7 +30,7 @@ const compareRanking = async () => {
       select: "title artist photo_url duration file",
       populate: {
         path: "artist",
-        select: "user",
+        select: "user display_name",
         populate: {
           path: "user",
           select: "first_name last_name photo_url",

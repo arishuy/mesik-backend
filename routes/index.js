@@ -8,6 +8,7 @@ import artistRoute from "./artistRoute.js";
 import albumRoute from "./albumRoute.js";
 import genreRoute from "./genreRoute.js";
 import rankingRoute from "./rankingRoute.js";
+import searchRoute from "./searchRoute.js";
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use("/albums", albumRoute);
 router.use("/genres", genreRoute);
 router.use("/artists", artistRoute);
 router.use("/ranking", rankingRoute);
+router.use("/search", searchRoute);
 
 export default router;

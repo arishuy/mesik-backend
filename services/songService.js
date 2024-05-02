@@ -91,7 +91,7 @@ const fetchSongs = async (page = 1, limit = 10) => {
       populate: [
         {
           path: "artist",
-          select: "user",
+          select: "user display_name",
           populate: {
             path: "user",
             select: "first_name last_name photo_url",
@@ -122,7 +122,7 @@ const fetch6SongsRelease = async () => {
     .lean()
     .populate({
       path: "artist",
-      select: "user",
+      select: "user display_name",
       populate: {
         path: "user",
         select: "first_name last_name photo_url",
@@ -165,6 +165,7 @@ const fetchRandomSongs = async () => {
         duration: 1, // Chỉ giữ lại trường duration
         artist: {
           _id: "$artist._id", // Chỉ giữ lại trường _id
+          display_name: "$artist.display_name", // Chỉ giữ lại trường display_name
           user: {
             first_name: 1,
             last_name: 1,
@@ -186,7 +187,7 @@ const fetchSongByArtist = async (artist_id) => {
     .lean()
     .populate({
       path: "artist",
-      select: "user",
+      select: "user display_name",
       populate: {
         path: "user",
         select: "first_name last_name photo_url",

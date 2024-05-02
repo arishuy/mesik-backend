@@ -20,6 +20,7 @@ import Playlist from "./Playlist.js";
 import Genre from "./Genre.js";
 import Listening from "./Listening.js";
 import Ranking from "./Ranking.js";
+import KeyWord from "./KeyWord.js";
 
 export {
   Certificate,
@@ -44,4 +45,5 @@ export {
   Genre,
   Listening,
   Ranking,
+  KeyWord,
 };
