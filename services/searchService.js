@@ -5,7 +5,7 @@ const searchByAll = async (keyword) => {
     const songs = await Song.find({ title: { $regex: keyword, $options: "i" } })
       .populate({
         path: "artist",
-        select: "user",
+        select: "user display_name",
         populate: {
           path: "user",
           select: "first_name last_name photo_url",
