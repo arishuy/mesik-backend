@@ -71,6 +71,12 @@ const addSongToPlaylist = async (playlist_id, song_id, user_id) => {
   if (playlist.user.toString() !== user_id.toString()) {
     throw new Error("Unauthorized");
   }
+  // check if song already exists in playlist
+  for (let song of playlist.songs) {
+    if (song.toString() === song_id.toString()) {
+      throw new Error("Song already exists in playlist");
+    }
+  }
   playlist.songs.push(song_id);
   await playlist.save();
 };
