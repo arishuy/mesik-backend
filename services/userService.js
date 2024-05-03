@@ -1,4 +1,11 @@
-import { User, Major, ExpertInfo, Artist, Listening } from "../models/index.js";
+import {
+  User,
+  Major,
+  ExpertInfo,
+  Artist,
+  Listening,
+  Song,
+} from "../models/index.js";
 import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
@@ -232,6 +239,49 @@ const getHistoryListen = async (user_id) => {
   return user.history_listen;
 };
 
+const addOrRemoveSongToLikedSong = async (user_id, song_id) => {
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  const song = await Song.findById(song_id);
+  if (!song) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Song not found");
+  }
+  if (user.liked_songs.includes(song_id)) {
+    user.liked_songs.pull(song_id);
+    await user.save();
+    return {
+      message: "Removed song from liked songs successfully",
+      favourite: false,
+    };
+  } else {
+    user.liked_songs.push(song_id);
+    await user.save();
+    return {
+      message: "Added song to liked songs successfully",
+      favourite: true,
+    };
+  }
+};
+
+const getLikedSongs = async (user_id) => {
+  const user = await User.findById(user_id).populate({
+    path: "liked_songs",
+    select: "title photo_url file play_count artist duration",
+    populate: {
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    },
+  });
+
+  return user.liked_songs;
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -245,4 +295,6 @@ export default {
   confirmUserById,
   deleteUserById,
   getHistoryListen,
+  addOrRemoveSongToLikedSong,
+  getLikedSongs,
 };

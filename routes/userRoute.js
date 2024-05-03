@@ -10,6 +10,18 @@ import schemas from "../validations/userValidations.js";
 const router = express.Router();
 
 router.get("", auth, checkRole([roles.ADMIN]), controller.getUsersPagination);
+router.get(
+  "/current/favourite/:song_id",
+  auth,
+  checkRole([roles.USER, roles.ARTIST, roles.ADMIN]),
+  controller.addOrRemoveSongToLikedSong
+);
+router.get(
+  "/current/favourite",
+  auth,
+  checkRole([roles.USER, roles.ARTIST, roles.ADMIN]),
+  controller.getLikedSongs
+);
 router.get("/current", auth, controller.getCurrentUserInfo);
 router.get(
   "/current/history-listen",

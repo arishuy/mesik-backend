@@ -219,6 +219,30 @@ const getHistoryListen = async (req, res, next) => {
   }
 };
 
+const addOrRemoveSongToLikedSong = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { song_id } = req.params;
+    const result = await userService.addOrRemoveSongToLikedSong(
+      user_id,
+      song_id
+    );
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getLikedSongs = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const songs = await userService.getLikedSongs(user_id);
+    res.json({ songs });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -237,4 +261,6 @@ export default {
   getCurrentUserNotifications,
   updateSeenNotification,
   getHistoryListen,
+  addOrRemoveSongToLikedSong,
+  getLikedSongs,
 };
