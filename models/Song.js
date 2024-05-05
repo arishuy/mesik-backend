@@ -13,6 +13,7 @@ const songSchema = new mongoose.Schema(
     photo_public_id: { type: String },
     play_count: { type: Number, default: 0 },
     play_count_daily: { type: Number, default: 0 },
+    lyric: { type: String },
   },
   {
     timestamps: true,

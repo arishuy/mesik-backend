@@ -115,6 +115,45 @@ const incresasePlayCount = async (req, res, next) => {
   }
 };
 
+const addLyricToSong = async (req, res, next) => {
+  try {
+    const { song_id } = req.params;
+    const { lyric } = req.body;
+    await songService.addLyricToSong(song_id, lyric);
+    res.json({ message: "Added lyric to song successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getLyricsFromSong = async (req, res, next) => {
+  try {
+    const { song_id } = req.params;
+    const result = await songService.getLyricsFromSong(song_id);
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateSong = async (req, res, next) => {
+  try {
+    const { song_id } = req.params;
+    const { title, year, duration, genre, artist } = req.body;
+    const song = await songService.updateSong({
+      song_id,
+      title,
+      year,
+      duration,
+      genre,
+      artist,
+    });
+    res.json({ song });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -125,4 +164,7 @@ export default {
   fetchRandomSongs,
   fetchSongByArtist,
   incresasePlayCount,
+  addLyricToSong,
+  getLyricsFromSong,
+  updateSong,
 };

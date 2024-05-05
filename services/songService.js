@@ -75,7 +75,10 @@ const createSongByArtist = async ({
 };
 
 const fetchSongById = async (song_id) => {
-  const song = await Song.findById(song_id);
+  const song = await Song.findById(song_id).populate({
+    path: "artist",
+    select: "user display_name",
+  });
   const playCount = await Listening.countDocuments({ song: song_id });
   song.play_count = playCount;
   return song;
@@ -231,6 +234,38 @@ const incresasePlayCount = async (user_id, song_id) => {
   return listening;
 };
 
+const addLyricToSong = async (song_id, lyric) => {
+  await Song.findByIdAndUpdate(song_id, { lyric: lyric });
+};
+
+const getLyricsFromSong = async (song_id) => {
+  const song = await Song.findById(song_id);
+  return song.lyric;
+};
+
+const updateSong = async ({
+  song_id,
+  title,
+  year,
+  duration,
+  genre,
+  artist,
+}) => {
+  const song = await Song.findByIdAndUpdate(
+    song_id,
+    {
+      title: title,
+      year: year,
+      duration: duration,
+      genre: genre,
+      artist: artist,
+    },
+    { new: true }
+  );
+
+  return song;
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -241,4 +276,7 @@ export default {
   fetchRandomSongs,
   fetchSongByArtist,
   incresasePlayCount,
+  addLyricToSong,
+  getLyricsFromSong,
+  updateSong,
 };
