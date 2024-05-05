@@ -219,7 +219,7 @@ const getHistoryListen = async (user_id) => {
   const user = await User.findById(user_id)
     .populate({
       path: "history_listen",
-      select: "title photo_url file play_count artist",
+      select: "title photo_url file play_count artist duration",
       populate: {
         path: "artist",
         select: "user display_name",
