@@ -11,6 +11,12 @@ const router = express.Router();
 
 router.get("", auth, checkRole([roles.ADMIN]), controller.getUsersPagination);
 router.get(
+  "/current/request",
+  auth,
+  checkRole([roles.USER]),
+  controller.getMyRequest
+);
+router.get(
   "/current/favourite/:song_id",
   auth,
   checkRole([roles.USER, roles.ARTIST, roles.ADMIN]),

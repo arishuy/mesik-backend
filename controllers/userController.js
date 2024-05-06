@@ -89,12 +89,12 @@ const promoteToArtist = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
     const { descriptions, display_name } = req.body;
-    const expert = await userService.promoteToArtist({
+    const artist = await userService.promoteToArtist({
       user_id,
       descriptions,
       display_name,
     });
-    res.json({ expert });
+    res.json({ artist });
   } catch (error) {
     next(error);
   }
@@ -243,6 +243,16 @@ const getLikedSongs = async (req, res, next) => {
   }
 };
 
+const getMyRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const request = await userService.getMyRequest(user_id);
+    res.json({ request });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -263,4 +273,5 @@ export default {
   getHistoryListen,
   addOrRemoveSongToLikedSong,
   getLikedSongs,
+  getMyRequest
 };

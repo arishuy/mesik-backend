@@ -46,9 +46,25 @@ const deleteGenre = async (req, res, next) => {
   }
 };
 
+const updateGenreById = async (req, res, next) => {
+  try {
+    const { genre_id } = req.params;
+    const { name, description } = req.body;
+    const genre = await genreService.updateGenreById(genre_id, {
+      name,
+      description,
+    });
+
+    res.json({ genre });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createGenre,
   getGenres,
   getGenreById,
   deleteGenre,
+  updateGenreById,
 };

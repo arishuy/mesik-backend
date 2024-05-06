@@ -34,9 +34,19 @@ const deleteGenreById = async (genre_id) => {
   await Genre.deleteOne({ _id: genre_id });
 };
 
+const updateGenreById = async (genre_id, { name, description }) => {
+  const genre = await Genre.findByIdAndUpdate(
+    genre_id,
+    { name, description },
+    { new: true }
+  );
+  return genre;
+};
+
 export default {
   createGenre,
   fetchGenres,
   fetchGenreById,
   deleteGenreById,
+  updateGenreById,
 };

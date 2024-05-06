@@ -5,6 +5,7 @@ import {
   Artist,
   Listening,
   Song,
+  Request,
 } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
@@ -153,18 +154,16 @@ const promoteToArtist = async ({
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
-  let artist = await Artist.create({
+
+  let artist = await Request.create({
     user: user_id,
+    status: "PENDING",
+    reason: "",
     descriptions: descriptions,
     display_name:
       display_name === "" ? user.first_name + user.last_name : display_name,
-    albums: [],
-    songs: [],
   });
-  await user.updateOne({
-    role: roles.ARTIST,
-  });
-  await artist.populate("user", "first_name last_name role");
+
   return artist;
 };
 
@@ -282,6 +281,11 @@ const getLikedSongs = async (user_id) => {
   return user.liked_songs;
 };
 
+const getMyRequest = async (user_id) => {
+  const requests = await Request.find({ user: user_id });
+  return requests;
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -297,4 +301,5 @@ export default {
   getHistoryListen,
   addOrRemoveSongToLikedSong,
   getLikedSongs,
+  getMyRequest,
 };

@@ -6,6 +6,12 @@ import controller from "../controllers/genreController.js";
 const router = express.Router();
 
 router.post("", auth, checkRole([roles.ADMIN]), controller.createGenre);
+router.put(
+  "/:genre_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.updateGenreById
+);
 router.get(
   "",
   auth,
