@@ -17,7 +17,9 @@ const userSchema = new mongoose.Schema(
     encrypted_password: String,
     reset_password: String,
     history_listen: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
-    liked_songs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }],
+    liked_songs: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Song", default: [] },
+    ],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "Artist" }],
     role: {
       type: String,
