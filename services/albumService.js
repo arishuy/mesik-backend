@@ -1,4 +1,4 @@
-import { Album } from "../models/index.js";
+import { Album, Artist } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 
 const createAlbum = async ({ title, song_id, artist_id, photo }) => {
@@ -66,10 +66,22 @@ const deleteAlbumById = async (album_id) => {
   await Album.deleteOne({ _id: album_id });
 };
 
+const deleteAlbumByArtist = async (album_id, user_id) => {
+  const artist_id = await Artist.findOne({ user: user_id });
+  if (!artist_id) {
+    throw new Error("Artist not found");
+  }
+  const album = await Album.findOne({ _id: album_id, artist: artist_id });
+  if (!album) {
+    throw new Error("Album not found");
+  }
+  await Album.deleteOne({ _id: album_id });
+};
 export default {
   createAlbum,
   fetchAlbums,
   fetchAlbumById,
   fetchAlbumByArtist,
   deleteAlbumById,
+  deleteAlbumByArtist,
 };
