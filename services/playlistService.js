@@ -1,3 +1,4 @@
+import { populate } from "dotenv";
 import { Playlist } from "../models/index.js";
 
 const createPlaylist = async ({ title, user_id }) => {
@@ -37,12 +38,20 @@ const fetchPlaylists = async (page = 1, limit = 10) => {
       customLabels: {
         docs: "playlists",
       },
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
     }
   );
   return pagination;
 };
 
-const deletePlaylistById = async (playlist_id, user_id) => {
+const deletePlaylistById = async (playlist_id) => {
+  await Playlist.deleteOne({ _id: playlist_id });
+};
+
+const deletePlaylistByUser = async (playlist_id, user_id) => {
   const playlist = await Playlist.findById(playlist_id);
   if (playlist.user.toString() !== user_id.toString()) {
     throw new Error("Unauthorized");
@@ -97,6 +106,7 @@ export default {
   fetchPlaylists,
   fetchPlaylistById,
   deletePlaylistById,
+  deletePlaylistByUser,
   fetchPlaylistByUser,
   addSongToPlaylist,
   removeSongFromPlaylist,

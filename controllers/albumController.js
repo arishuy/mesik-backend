@@ -41,7 +41,7 @@ const getAlbums = async (req, res, next) => {
 const deleteAlbum = async (req, res, next) => {
   try {
     const { album_id } = req.params;
-    if (req.authData.user.role !== "admin") {
+    if (req.authData.user.role !== "ADMIN") {
       const user_id = req.authData.user._id;
       await albumService.deleteAlbumByArtist(album_id, user_id);
     } else await albumService.deleteAlbumById(album_id);

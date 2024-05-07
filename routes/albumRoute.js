@@ -10,7 +10,7 @@ const router = express.Router();
 router.post(
   "",
   uploadImage.single("photo"),
-  trimRequest.all,
+  trimRequest.all,  
   controller.createAlbum
 );
 router.get("/:album_id", controller.getAlbumById);

@@ -37,9 +37,11 @@ const getPlaylists = async (req, res, next) => {
 
 const deletePlaylist = async (req, res, next) => {
   try {
-    const user_id = req.authData.user._id;
     const { playlist_id } = req.params;
-    await playlistService.deletePlaylistById(playlist_id, user_id);
+    if (req.authData.user.role !== "ADMIN") {
+      const user_id = req.authData.user._id;
+      await playlistService.deletePlaylistByUser(playlist_id, user_id);
+    } else await playlistService.deletePlaylistById(playlist_id);
     res.json({ message: "Deleted" });
   } catch (error) {
     next(error);

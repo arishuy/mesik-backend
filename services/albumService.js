@@ -1,3 +1,4 @@
+import { populate } from "dotenv";
 import { Album, Artist } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 
@@ -56,6 +57,10 @@ const fetchAlbums = async (page = 1, limit = 10) => {
       lean: true,
       customLabels: {
         docs: "albums",
+      },
+      populate: {
+        path: "artist",
+        select: "user display_name",
       },
     }
   );
