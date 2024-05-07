@@ -253,6 +253,27 @@ const getMyRequest = async (req, res, next) => {
   }
 };
 
+const followArtist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { artist_id } = req.params;
+    const result = await userService.followArtist(user_id, artist_id);
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getFollowing = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const following = await userService.getFollowing(user_id);
+    res.json({ following });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -273,5 +294,7 @@ export default {
   getHistoryListen,
   addOrRemoveSongToLikedSong,
   getLikedSongs,
-  getMyRequest
+  getMyRequest,
+  followArtist,
+  getFollowing,
 };

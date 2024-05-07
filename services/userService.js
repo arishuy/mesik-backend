@@ -286,6 +286,50 @@ const getMyRequest = async (user_id) => {
   return requests;
 };
 
+const followArtist = async (user_id, artist_id) => {
+  const artist = await Artist.findOne({ _id: artist_id });
+  if (!artist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Artist not found");
+  }
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  if (user.following.includes(artist_id)) {
+    user.following.pull(artist_id);
+    await user.save();
+
+    artist.followers.pull(user_id);
+    await artist.save();
+    return {
+      totalFollow: artist.followers.length,
+      isFollow: false,
+    };
+  }
+  user.following.push(artist_id);
+  await user.save();
+
+  artist.followers.push(user_id);
+  await artist.save();
+
+  return {
+    totalFollow: artist.followers.length,
+    isFollow: true,
+  };
+};
+
+const getFollowing = async (user_id) => {
+  const user = await User.findById(user_id).populate({
+    path: "following",
+    select: "display_name",
+    populate: {
+      path: "user",
+      select: "first_name last_name photo_url",
+    },
+  });
+  return user.following;
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -302,4 +346,6 @@ export default {
   addOrRemoveSongToLikedSong,
   getLikedSongs,
   getMyRequest,
+  followArtist,
+  getFollowing,
 };

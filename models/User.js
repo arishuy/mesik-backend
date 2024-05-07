@@ -20,7 +20,9 @@ const userSchema = new mongoose.Schema(
     liked_songs: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Song", default: [] },
     ],
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "Artist" }],
+    following: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Artist", default: [] },
+    ],
     role: {
       type: String,
       enum: Object.values(roles),

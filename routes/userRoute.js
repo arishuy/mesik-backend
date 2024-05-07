@@ -82,7 +82,10 @@ router.put(
   auth,
   controller.updateSeenNotification
 );
+
+router.get("/current/follow/:artist_id", auth, controller.followArtist);
 router.get("/:id", controller.getUserById);
+router.get("/current/following", auth, controller.getFollowing);
 router.put(
   "/:id",
   auth,
