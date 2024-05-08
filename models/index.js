@@ -22,6 +22,7 @@ import Listening from "./Listening.js";
 import Ranking from "./Ranking.js";
 import KeyWord from "./KeyWord.js";
 import Request from "./Request.js";
+import Region from "./Region.js";
 
 export {
   Certificate,
@@ -48,4 +49,5 @@ export {
   Ranking,
   KeyWord,
   Request,
+  Region,
 };

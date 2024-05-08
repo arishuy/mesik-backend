@@ -6,6 +6,7 @@ const createSong = async ({
   year,
   duration,
   genre_id,
+  region_id,
   artist_id,
   file = "",
   photo,
@@ -27,6 +28,7 @@ const createSong = async ({
     duration: duration,
     file: link,
     genre: genre_id,
+    region: region_id,
     artist: artist_id,
     photo_url: response ? response.url : null,
     photo_public_id: response ? response.public_id : null,
@@ -41,6 +43,7 @@ const createSongByArtist = async ({
   year,
   duration,
   genre_id,
+  region_id,
   user_id,
   file = "",
   photo,
@@ -65,6 +68,7 @@ const createSongByArtist = async ({
     duration: duration,
     file: link,
     genre: genre_id,
+    region: region_id,
     artist: artist_id,
     photo_url: response ? response.url : null,
     photo_public_id: response ? response.public_id : null,
@@ -249,6 +253,7 @@ const updateSong = async ({
   year,
   duration,
   genre,
+  region,
   artist,
 }) => {
   const song = await Song.findByIdAndUpdate(
@@ -258,6 +263,7 @@ const updateSong = async ({
       year: year,
       duration: duration,
       genre: genre,
+      region: region,
       artist: artist,
     },
     { new: true }

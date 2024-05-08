@@ -11,6 +11,7 @@ import rankingRoute from "./rankingRoute.js";
 import searchRoute from "./searchRoute.js";
 import requestRoute from "./requestRoute.js";
 import chatbotRoute from "./chatbotRoute.js";
+import regionRoute from "./regionRoute.js";
 
 const router = express.Router();
 
@@ -27,5 +28,6 @@ router.use("/ranking", rankingRoute);
 router.use("/search", searchRoute);
 router.use("/requests", requestRoute);
 router.use("/chatbot", chatbotRoute);
+router.use("/regions", regionRoute);
 
 export default router;

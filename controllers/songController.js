@@ -2,7 +2,15 @@ import songService from "../services/songService.js";
 
 const createSong = async (req, res, next) => {
   try {
-    const { title, year, duration, genre_id, artist_id, play_count } = req.body;
+    const {
+      title,
+      year,
+      duration,
+      genre_id,
+      region_id,
+      artist_id,
+      play_count,
+    } = req.body;
     const photo = req.files.photo[0];
     const file = req.files.file[0].buffer;
     const song = await songService.createSong({
@@ -10,6 +18,7 @@ const createSong = async (req, res, next) => {
       year,
       duration,
       genre_id,
+      region_id,
       artist_id,
       file,
       photo,
@@ -24,7 +33,7 @@ const createSong = async (req, res, next) => {
 const createSongByArtist = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { title, year, duration, genre_id, play_count } = req.body;
+    const { title, year, duration, genre_id, region_id, play_count } = req.body;
     const photo = req.files.photo[0];
     const file = req.files.file[0].buffer;
     const song = await songService.createSongByArtist({
@@ -32,6 +41,7 @@ const createSongByArtist = async (req, res, next) => {
       year,
       duration,
       genre_id,
+      region_id,
       user_id,
       file,
       photo,
@@ -139,13 +149,14 @@ const getLyricsFromSong = async (req, res, next) => {
 const updateSong = async (req, res, next) => {
   try {
     const { song_id } = req.params;
-    const { title, year, duration, genre, artist } = req.body;
+    const { title, year, duration, genre, region, artist } = req.body;
     const song = await songService.updateSong({
       song_id,
       title,
       year,
       duration,
       genre,
+      region,
       artist,
     });
     res.json({ song });

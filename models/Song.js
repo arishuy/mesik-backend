@@ -14,6 +14,10 @@ const songSchema = new mongoose.Schema(
     play_count: { type: Number, default: 0 },
     play_count_daily: { type: Number, default: 0 },
     lyric: { type: String },
+    region: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Region",
+    },
   },
   {
     timestamps: true,
