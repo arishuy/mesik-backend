@@ -47,7 +47,7 @@ const fetchArtistById = async (artist_id) => {
 const fetch5Artists = async () => {
   const artists = await Artist.find()
     .limit(6)
-    .sort({ follower: -1 })
+    .sort({ total_followers: -1 })
     .populate("user", "first_name last_name photo_url");
   return artists;
 };

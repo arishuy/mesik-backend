@@ -45,6 +45,11 @@ const artistSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    total_followers: {
+      // Thêm trường mới để tính tổng số lượng followers
+      type: Number,
+      default: 0,
+    },
   },
   {
     collection: "artists",
@@ -54,6 +59,16 @@ const artistSchema = new mongoose.Schema(
 
 artistSchema.plugin(mongoosePaginate);
 artistSchema.plugin(aggregatePaginate);
+
+artistSchema.pre("save", async function (next) {
+  try {
+    const totalFollowers = this.followers.length;
+    this.total_followers = totalFollowers;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 const Artist = mongoose.model("Artist", artistSchema);
 

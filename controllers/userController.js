@@ -2,7 +2,6 @@ import userService from "../services/userService.js";
 import jobRequestService from "../services/jobRequestService.js";
 import transactionService from "../services/transactionService.js";
 import notificationService from "../services/notificationService.js";
-
 const getUserById = async (req, res, next) => {
   try {
     const user_id = req.params.id;
@@ -273,6 +272,8 @@ const getFollowing = async (req, res, next) => {
     next(error);
   }
 };
+
+
 
 export default {
   getUserById,
