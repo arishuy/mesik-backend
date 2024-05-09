@@ -69,7 +69,6 @@ const getSongs = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
     const pagination = await songService.fetchSongs(page, limit);
-
     res.json({ pagination });
   } catch (error) {
     next(error);
@@ -108,8 +107,18 @@ const fetchRandomSongs = async (req, res, next) => {
 const fetchSongByArtist = async (req, res, next) => {
   try {
     const { artist_id } = req.params;
-    const result = await songService.fetchSongByArtist(artist_id);
-    res.json({ result });
+    const { page, limit } = req.query;
+    if (page && limit) {
+      const pagination = await songService.fetchSongByArtistPaginate(
+        artist_id,
+        page,
+        limit
+      );
+      return res.json({ pagination });
+    } else {
+      const result = await songService.fetchSongByArtist(artist_id);
+      res.json({ result });
+    }
   } catch (error) {
     next(error);
   }

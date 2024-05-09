@@ -101,6 +101,15 @@ const removeSongFromPlaylist = async (playlist_id, song_id, user_id) => {
   await playlist.save();
 };
 
+const updatePlaylist = async (playlist_id, title, user_id) => {
+  const playlist = await Playlist.findById(playlist_id);
+  if (playlist.user.toString() !== user_id.toString()) {
+    throw new Error("Unauthorized");
+  }
+  playlist.title = title;
+  await playlist.save();
+};
+
 export default {
   createPlaylist,
   fetchPlaylists,
@@ -110,4 +119,5 @@ export default {
   fetchPlaylistByUser,
   addSongToPlaylist,
   removeSongFromPlaylist,
+  updatePlaylist,
 };

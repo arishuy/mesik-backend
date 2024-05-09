@@ -10,6 +10,16 @@ const createThread = async (req, res, next) => {
   }
 };
 
+const deleteThread = async (req, res, next) => {
+  try {
+    const { threadId } = req.body;
+    const thread = await chatbotService.deleteUserThread(threadId);
+    res.json({ thread });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const addMessage = async (req, res, next) => {
   try {
     let pollingInterval;
@@ -58,4 +68,4 @@ const addMessage = async (req, res, next) => {
   }
 };
 
-export default { createThread, addMessage };
+export default { createThread, deleteThread, addMessage };

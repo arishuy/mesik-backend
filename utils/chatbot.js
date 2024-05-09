@@ -14,6 +14,11 @@ const createThread = async () => {
   return thread;
 };
 
+const deleteThread = async (threadId) => {
+  const response = await chatbot.beta.threads.del(threadId);
+  return response;
+};
+
 const askChatbot = async (threadId, message) => {
   const response = await chatbot.beta.threads.messages.create(threadId, {
     role: "user",
@@ -50,4 +55,11 @@ const checkingStatus = async (res, threadId, runId) => {
   }
 };
 
-export { createThread, askChatbot, runAssistant, checkingStatus, chatbot };
+export {
+  createThread,
+  askChatbot,
+  runAssistant,
+  checkingStatus,
+  deleteThread,
+  chatbot,
+};

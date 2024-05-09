@@ -82,6 +82,23 @@ const removeSongFromPlaylist = async (req, res, next) => {
     next(error);
   }
 };
+
+const updatePlaylist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { playlist_id } = req.params;
+    const { title } = req.body;
+    const playlist = await playlistService.updatePlaylist(
+      playlist_id,
+      title,
+      user_id
+    );
+
+    res.json({ playlist });
+  } catch (error) {
+    next(error);
+  }
+};
 export default {
   createPlaylist,
   getPlaylists,
@@ -90,4 +107,5 @@ export default {
   getPlaylistByUser,
   addSongToPlaylist,
   removeSongFromPlaylist,
+  updatePlaylist,
 };

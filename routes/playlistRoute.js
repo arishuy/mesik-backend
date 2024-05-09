@@ -42,5 +42,10 @@ router.delete(
   checkRole([roles.ADMIN, roles.USER, roles.ARTIST]),
   controller.deletePlaylist
 );
-
+router.put(
+  "/:playlist_id",
+  auth,
+  checkRole([roles.ADMIN, roles.USER, roles.ARTIST]),
+  controller.updatePlaylist
+);
 export default router;

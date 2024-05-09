@@ -206,6 +206,32 @@ const fetchSongByArtist = async (artist_id) => {
   return songs;
 };
 
+const fetchSongByArtistPaginate = async (artist_id, page = 1, limit = 10) => {
+  const pagination = await Song.paginate(
+    { artist: artist_id },
+    {
+      sort: { createdAt: -1 },
+      page,
+      limit,
+      populate: [
+        {
+          path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        },
+      ],
+      lean: true,
+      customLabels: {
+        docs: "songs",
+      },
+    }
+  );
+  return pagination;
+};
+
 const incresasePlayCount = async (user_id, song_id) => {
   // Fetch user data
   const user = await User.findById(user_id);
@@ -285,4 +311,5 @@ export default {
   addLyricToSong,
   getLyricsFromSong,
   updateSong,
+  fetchSongByArtistPaginate
 };
