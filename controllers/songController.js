@@ -4,7 +4,7 @@ const createSong = async (req, res, next) => {
   try {
     const {
       title,
-      year,
+      release_date,
       duration,
       genre_id,
       region_id,
@@ -15,7 +15,7 @@ const createSong = async (req, res, next) => {
     const file = req.files.file[0].buffer;
     const song = await songService.createSong({
       title,
-      year,
+      release_date,
       duration,
       genre_id,
       region_id,
@@ -33,12 +33,13 @@ const createSong = async (req, res, next) => {
 const createSongByArtist = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { title, year, duration, genre_id, region_id, play_count } = req.body;
+    const { title, release_date, duration, genre_id, region_id, play_count } =
+      req.body;
     const photo = req.files.photo[0];
     const file = req.files.file[0].buffer;
     const song = await songService.createSongByArtist({
       title,
-      year,
+      release_date,
       duration,
       genre_id,
       region_id,
@@ -149,11 +150,11 @@ const getLyricsFromSong = async (req, res, next) => {
 const updateSong = async (req, res, next) => {
   try {
     const { song_id } = req.params;
-    const { title, year, duration, genre, region, artist } = req.body;
+    const { title, release_date, duration, genre, region, artist } = req.body;
     const song = await songService.updateSong({
       song_id,
       title,
-      year,
+      release_date,
       duration,
       genre,
       region,

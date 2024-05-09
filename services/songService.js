@@ -3,7 +3,7 @@ import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
 const createSong = async ({
   title,
-  year,
+  release_date,
   duration,
   genre_id,
   region_id,
@@ -24,7 +24,7 @@ const createSong = async ({
   }
   const song = await Song.create({
     title: title,
-    year: year,
+    release_date: release_date,
     duration: duration,
     file: link,
     genre: genre_id,
@@ -40,7 +40,7 @@ const createSong = async ({
 
 const createSongByArtist = async ({
   title,
-  year,
+  release_date,
   duration,
   genre_id,
   region_id,
@@ -64,7 +64,7 @@ const createSongByArtist = async ({
   }
   const song = await Song.create({
     title: title,
-    year: year,
+    release_date: release_date,
     duration: duration,
     file: link,
     genre: genre_id,
@@ -124,7 +124,7 @@ const deleteSongById = async (song_id) => {
 
 const fetch6SongsRelease = async () => {
   const songs = await Song.find({})
-    .sort({ createdAt: -1 })
+    .sort({ release_date: -1 })
     .limit(6)
     .lean()
     .populate({
@@ -250,7 +250,7 @@ const getLyricsFromSong = async (song_id) => {
 const updateSong = async ({
   song_id,
   title,
-  year,
+  release_date,
   duration,
   genre,
   region,
@@ -260,7 +260,7 @@ const updateSong = async ({
     song_id,
     {
       title: title,
-      year: year,
+      release_date: release_date,
       duration: duration,
       genre: genre,
       region: region,

@@ -6,7 +6,6 @@ const songSchema = new mongoose.Schema(
     album: { type: String },
     artist: { type: mongoose.Schema.Types.ObjectId, ref: "Artist" }, // Reference Artist model
     genre: { type: mongoose.Schema.Types.ObjectId, ref: "Genre" }, // Reference Genre model
-    year: { type: Number },
     duration: { type: Number },
     file: { type: String }, // Path to the file on the server
     photo_url: { type: String },
@@ -14,6 +13,7 @@ const songSchema = new mongoose.Schema(
     play_count: { type: Number, default: 0 },
     play_count_daily: { type: Number, default: 0 },
     lyric: { type: String },
+    release_date: { type: Date },
     region: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Region",
