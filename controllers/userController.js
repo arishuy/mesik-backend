@@ -211,6 +211,14 @@ const updateSeenNotification = async (req, res, next) => {
 const getHistoryListen = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
+    const { limit } = req.query;
+    if (limit) {
+      const songs = await userService.getHistoryListenPagination(
+        user_id,
+        limit
+      );
+      return res.json({ songs });
+    }
     const songs = await userService.getHistoryListen(user_id);
     res.json({ songs });
   } catch (error) {
@@ -272,8 +280,6 @@ const getFollowing = async (req, res, next) => {
     next(error);
   }
 };
-
-
 
 export default {
   getUserById,

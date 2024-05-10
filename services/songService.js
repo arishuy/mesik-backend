@@ -1,6 +1,14 @@
-import { Song, User, Artist, Listening } from "../models/index.js";
+import {
+  Song,
+  User,
+  Artist,
+  Listening,
+  SuggestedPlaylist,
+  Playlist,
+} from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
+import Axios from "axios";
 const createSong = async ({
   title,
   release_date,
@@ -235,7 +243,7 @@ const fetchSongByArtistPaginate = async (artist_id, page = 1, limit = 10) => {
 const incresasePlayCount = async (user_id, song_id) => {
   // Fetch user data
   const user = await User.findById(user_id);
-
+  const length_before = user.history_listen.length;
   // Check if the song is already in the history_listen array
   const songIndex = user.history_listen.indexOf(song_id);
   if (songIndex !== -1) {
@@ -243,12 +251,32 @@ const incresasePlayCount = async (user_id, song_id) => {
     user.history_listen.splice(songIndex, 1);
     user.history_listen.push(song_id);
   } else {
-    // Remove the oldest song if history_listen is at max length
-    if (user.history_listen.length === 6) {
-      user.history_listen.shift();
-    }
     // If song is not in history, add it
     user.history_listen.push(song_id);
+  }
+
+  const length_after = user.history_listen.length;
+  if (length_after > length_before) {
+    if (length_after % 5 === 0 || length_after === 1) {
+      // khi thỏa mãn điều kiện, sẽ gọi đến API bên ngoài để lấy về 5 bài hát tương tự và thêm chúng vào playlist gợi ý
+      const response = await Axios.get(
+        `https://mesik-recommendation.onrender.com/recommend?song_id=${song_id}`
+      );
+      const list_songId = response.data.map((song) => song._id);
+
+      // create playlist if not exist
+      const suggestedPlaylist = await Playlist.create({
+        user: null,
+        title: "Suggested Playlist",
+        songs: list_songId,
+      });
+
+      // Update user's suggested_playlist array
+      await SuggestedPlaylist.create({
+        user: user_id,
+        playlist: suggestedPlaylist._id,
+      });
+    }
   }
 
   // Update user's history_listen array
@@ -311,5 +339,5 @@ export default {
   addLyricToSong,
   getLyricsFromSong,
   updateSong,
-  fetchSongByArtistPaginate
+  fetchSongByArtistPaginate,
 };

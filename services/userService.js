@@ -215,23 +215,44 @@ const deleteUserById = async (user_id) => {
 };
 
 const getHistoryListen = async (user_id) => {
-  const user = await User.findById(user_id)
-    .populate({
-      path: "history_listen",
-      select: "title photo_url file play_count artist duration",
+  const user = await User.findById(user_id).populate({
+    path: "history_listen",
+    select: "title photo_url file play_count artist duration",
+    populate: {
+      path: "artist",
+      select: "user display_name",
       populate: {
-        path: "artist",
-        select: "user display_name",
-        populate: {
-          path: "user",
-          select: "first_name last_name photo_url",
-        },
+        path: "user",
+        select: "first_name last_name photo_url",
       },
-    })
-    .limit(6);
-  for (let song of user.history_listen) {
+    },
+  });
+  // Lấy 6 phần tử cuối cùng của mảng history_listen
+  const historyListen = user.history_listen.slice(-6);
+
+  // Đếm số lần nghe của mỗi bài hát
+  for (let song of historyListen) {
     song.play_count = await Listening.countDocuments({ song: song._id });
   }
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  return historyListen;
+};
+
+const getHistoryListenPagination = async (user_id, page = 1, limit = 10) => {
+  const user = await User.findById(user_id).populate({
+    path: "history_listen",
+    select: "title photo_url file play_count artist duration",
+    populate: {
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    },
+  });
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
@@ -348,4 +369,5 @@ export default {
   getMyRequest,
   followArtist,
   getFollowing,
+  getHistoryListenPagination
 };

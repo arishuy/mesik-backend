@@ -23,6 +23,7 @@ import Ranking from "./Ranking.js";
 import KeyWord from "./KeyWord.js";
 import Request from "./Request.js";
 import Region from "./Region.js";
+import SuggestedPlaylist from "./SuggestedPlaylist.js";
 
 export {
   Certificate,
@@ -50,4 +51,5 @@ export {
   KeyWord,
   Request,
   Region,
+  SuggestedPlaylist,
 };
