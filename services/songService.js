@@ -96,9 +96,12 @@ const fetchSongById = async (song_id) => {
   return song;
 };
 
-const fetchSongs = async (page = 1, limit = 10) => {
+const fetchSongs = async (page = 1, limit = 10, name = "", genre = "all") => {
   const pagination = await Song.paginate(
-    {},
+    {
+      title: { $regex: name, $options: "i" },
+      genre: genre === "all" ? { $ne: null } : genre,
+    },
     {
       sort: { createdAt: -1 },
       page,

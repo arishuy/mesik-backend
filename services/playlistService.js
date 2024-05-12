@@ -29,7 +29,9 @@ const fetchPlaylistById = async (playlist_id) => {
 
 const fetchPlaylists = async (page = 1, limit = 10) => {
   const pagination = await Playlist.paginate(
-    {},
+    {
+      user: { $ne: null },
+    },
     {
       sort: { createdAt: -1 },
       page,
@@ -44,6 +46,7 @@ const fetchPlaylists = async (page = 1, limit = 10) => {
       },
     }
   );
+
   return pagination;
 };
 

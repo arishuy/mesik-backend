@@ -26,9 +26,24 @@ const fetchUserById = async (user_id) => {
   return userMapper(user);
 };
 
-const fetchUsersPagination = async (page = 1, limit = 10) => {
+const fetchUsersPagination = async (
+  page = 1,
+  limit = 10,
+  role = "all",
+  name = ""
+) => {
   const pagination = await User.paginate(
-    { deleted: false },
+    {
+      deleted: false,
+      role:
+        role === "all"
+          ? { $in: [roles.USER, roles.EXPERT, roles.ARTIST] }
+          : role,
+      $or: [
+        { first_name: { $regex: name, $options: "i" } },
+        { last_name: { $regex: name, $options: "i" } },
+      ],
+    },
     {
       select:
         "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
@@ -369,5 +384,5 @@ export default {
   getMyRequest,
   followArtist,
   getFollowing,
-  getHistoryListenPagination
+  getHistoryListenPagination,
 };
