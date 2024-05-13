@@ -14,6 +14,8 @@ export const userMapper = ({
   isRestricted,
   isConfirmed,
   lastLoginTime,
+  premiumStartDate,
+  premiumEndDate,
 }) => ({
   _id,
   first_name,
@@ -30,4 +32,6 @@ export const userMapper = ({
   isRestricted,
   isConfirmed,
   lastLoginTime,
+  premiumStartDate,
+  premiumEndDate,
 });

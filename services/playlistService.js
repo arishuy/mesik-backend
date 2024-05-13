@@ -1,4 +1,3 @@
-import { populate } from "dotenv";
 import { Playlist } from "../models/index.js";
 
 const createPlaylist = async ({ title, user_id }) => {

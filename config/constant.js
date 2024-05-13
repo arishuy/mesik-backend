@@ -26,7 +26,7 @@ const booking_status = {
 const transaction_types = {
   DEPOSIT: "DEPOSIT",
   WITHDRAWAL: "WITHDRAWAL",
-  PAYMENT: "PAYMENT",
+  BUY_PREMIUM: "BUY_PREMIUM",
 };
 
 const transaction_status = {

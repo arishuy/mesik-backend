@@ -33,6 +33,16 @@ const userSchema = new mongoose.Schema(
     providers: { type: [String], default: [] },
     balance: { type: Number, min: 0, default: 0 },
     lastLoginTime: { type: Date, default: () => Date.now() },
+
+    // Thêm trường cho gói dịch vụ Premium
+    premiumStartDate: {
+      type: Date,
+      default: null,
+    }, // Thời điểm bắt đầu sử dụng gói dịch vụ Premium
+    premiumEndDate: {
+      type: Date,
+      default: null,
+    }, // Thời điểm kết thúc gói dịch vụ Premium
   },
   { collection: "users" }
 );

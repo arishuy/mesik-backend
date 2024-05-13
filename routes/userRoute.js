@@ -119,4 +119,11 @@ router.get(
   controller.getJobRequestsPaginationByUserId
 );
 
+router.post(
+  "/premium-package/:premiumPackage_id",
+  auth,
+  checkRole([roles.USER, roles.ARTIST]),
+  controller.buyPremiumPackage
+);
+
 export default router;

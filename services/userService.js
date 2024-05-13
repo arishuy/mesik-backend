@@ -6,6 +6,8 @@ import {
   Listening,
   Song,
   Request,
+  Transaction,
+  PremiumPackage,
 } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
@@ -366,6 +368,35 @@ const getFollowing = async (user_id) => {
   return user.following;
 };
 
+const buyPremiumPackage = async (user_id, premiumPackage_id) => {
+  const user = await User.findById(user_id);
+  const premiumPackage = await PremiumPackage.findById(premiumPackage_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  if (!premiumPackage) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Premium package not found");
+  }
+  if (user.balance < premiumPackage.price) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Not enough balance");
+  }
+  user.balance -= premiumPackage.price;
+  if (!user.premiumStartDate) user.premiumStartDate = new Date();
+  user.premiumEndDate = new Date(
+    user.premiumEndDate.getTime() +
+      premiumPackage.durationMonths * 30 * 24 * 60 * 60 * 1000
+  );
+  await user.save();
+
+  // create transaction
+  const transaction = await Transaction.create({
+    user: user_id,
+    amount: premiumPackage.price,
+    transaction_type: "BUY_PREMIUM",
+  });
+  return user;
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -385,4 +416,5 @@ export default {
   followArtist,
   getFollowing,
   getHistoryListenPagination,
+  buyPremiumPackage,
 };

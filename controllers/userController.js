@@ -283,6 +283,20 @@ const getFollowing = async (req, res, next) => {
   }
 };
 
+const buyPremiumPackage = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { premiumPackage_id } = req.params;
+    const result = await userService.buyPremiumPackage(
+      user_id,
+      premiumPackage_id
+    );
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -306,4 +320,5 @@ export default {
   getMyRequest,
   followArtist,
   getFollowing,
+  buyPremiumPackage,
 };

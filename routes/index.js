@@ -15,6 +15,7 @@ import regionRoute from "./regionRoute.js";
 import suggestedPlaylistRoute from "./suggestedPlaylistRoute.js";
 import reportRoute from "./reportRoute.js";
 import transactionRoute from "./transactionRoute.js";
+import premiumPackageRoute from "./premiumPackageRoute.js";
 
 const router = express.Router();
 
@@ -35,5 +36,6 @@ router.use("/chatbot", chatbotRoute);
 router.use("/regions", regionRoute);
 router.use("/transactions", transactionRoute);
 router.use("/suggested-playlists", suggestedPlaylistRoute);
+router.use("/premium-packages", premiumPackageRoute);
 
 export default router;

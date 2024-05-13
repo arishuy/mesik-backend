@@ -24,6 +24,7 @@ import KeyWord from "./KeyWord.js";
 import Request from "./Request.js";
 import Region from "./Region.js";
 import SuggestedPlaylist from "./SuggestedPlaylist.js";
+import PremiumPackage from "./PremiumPackage.js";
 
 export {
   Certificate,
@@ -52,4 +53,5 @@ export {
   Request,
   Region,
   SuggestedPlaylist,
+  PremiumPackage,
 };
