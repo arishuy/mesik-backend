@@ -9,7 +9,7 @@ const router = express.Router();
 router.post(
   "",
   auth,
-  checkRole([roles.USER, roles.EXPERT]),
+  checkRole([roles.USER, roles.ARTIST]),
   uploadImage.single("photo"),
   controller.createReport
 );

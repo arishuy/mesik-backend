@@ -13,6 +13,8 @@ import requestRoute from "./requestRoute.js";
 import chatbotRoute from "./chatbotRoute.js";
 import regionRoute from "./regionRoute.js";
 import suggestedPlaylistRoute from "./suggestedPlaylistRoute.js";
+import reportRoute from "./reportRoute.js";
+import transactionRoute from "./transactionRoute.js";
 
 const router = express.Router();
 
@@ -26,10 +28,12 @@ router.use("/albums", albumRoute);
 router.use("/genres", genreRoute);
 router.use("/artists", artistRoute);
 router.use("/ranking", rankingRoute);
+router.use("/reports", reportRoute);
 router.use("/search", searchRoute);
 router.use("/requests", requestRoute);
 router.use("/chatbot", chatbotRoute);
 router.use("/regions", regionRoute);
+router.use("/transactions", transactionRoute);
 router.use("/suggested-playlists", suggestedPlaylistRoute);
 
 export default router;
