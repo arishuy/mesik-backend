@@ -181,6 +181,7 @@ const fetchRandomSongs = async () => {
         play_count: 1, // Chỉ giữ lại trường play_count
         file: 1, // Chỉ giữ lại trường file
         duration: 1, // Chỉ giữ lại trường duration
+        isPremium: 1, // Chỉ giữ lại trường isPremium
         artist: {
           _id: "$artist._id", // Chỉ giữ lại trường _id
           display_name: "$artist.display_name", // Chỉ giữ lại trường display_name
@@ -262,23 +263,24 @@ const incresasePlayCount = async (user_id, song_id) => {
   if (length_after > length_before) {
     if (length_after % 5 === 0 || length_after === 1) {
       // khi thỏa mãn điều kiện, sẽ gọi đến API bên ngoài để lấy về 5 bài hát tương tự và thêm chúng vào playlist gợi ý
-      const response = await Axios.get(
+      await Axios.get(
         `https://mesik-recommendation.onrender.com/recommend?song_id=${song_id}`
-      );
-      const list_songId = response.data.map((song) => song._id);
-
-      // create playlist if not exist
-      const suggestedPlaylist = await Playlist.create({
-        user: null,
-        title: "Suggested Playlist",
-        songs: list_songId,
-      });
-
-      // Update user's suggested_playlist array
-      await SuggestedPlaylist.create({
-        user: user_id,
-        playlist: suggestedPlaylist._id,
-      });
+      )
+        .then(async (response) => {
+          const list_songId = response.data.map((song) => song._id);
+          const suggestedPlaylist = await Playlist.create({
+            user: null,
+            title: "Suggested Playlist",
+            songs: list_songId,
+          });
+          await SuggestedPlaylist.create({
+            user: user_id,
+            playlist: suggestedPlaylist._id,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   }
 
@@ -312,6 +314,7 @@ const updateSong = async ({
   genre,
   region,
   artist,
+  isPremium,
 }) => {
   const song = await Song.findByIdAndUpdate(
     song_id,
@@ -322,6 +325,7 @@ const updateSong = async ({
       genre: genre,
       region: region,
       artist: artist,
+      isPremium: isPremium,
     },
     { new: true }
   );

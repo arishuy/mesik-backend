@@ -238,7 +238,7 @@ const deleteUserById = async (user_id) => {
 const getHistoryListen = async (user_id) => {
   const user = await User.findById(user_id).populate({
     path: "history_listen",
-    select: "title photo_url file play_count artist duration",
+    select: "title photo_url file play_count artist duration isPremium",
     populate: {
       path: "artist",
       select: "user display_name",
@@ -264,7 +264,7 @@ const getHistoryListen = async (user_id) => {
 const getHistoryListenPagination = async (user_id, page = 1, limit = 10) => {
   const user = await User.findById(user_id).populate({
     path: "history_listen",
-    select: "title photo_url file play_count artist duration",
+    select: "title photo_url file play_count artist duration isPremium",
     populate: {
       path: "artist",
       select: "user display_name",
@@ -309,7 +309,7 @@ const addOrRemoveSongToLikedSong = async (user_id, song_id) => {
 const getLikedSongs = async (user_id) => {
   const user = await User.findById(user_id).populate({
     path: "liked_songs",
-    select: "title photo_url file play_count artist duration",
+    select: "title photo_url file play_count artist duration isPremium",
     populate: {
       path: "artist",
       select: "user display_name",

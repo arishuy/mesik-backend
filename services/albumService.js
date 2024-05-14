@@ -1,4 +1,3 @@
-import { populate } from "dotenv";
 import { Album, Artist } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 
@@ -20,7 +19,7 @@ const createAlbum = async ({ title, song_id, artist_id, photo }) => {
 const fetchAlbumById = async (album_id) => {
   const album = await Album.findById(album_id).populate({
     path: "songs",
-    select: "title photo_url file duration artist createdAt",
+    select: "title photo_url file duration artist createdAt isPremium",
     populate: {
       path: "artist",
       select: "user display_name",
@@ -35,7 +34,7 @@ const fetchAlbumById = async (album_id) => {
 const fetchAlbumByArtist = async (artist_id) => {
   const album = await Album.find({ artist: artist_id }).populate({
     path: "songs",
-    select: "title photo_url file duration artist",
+    select: "title photo_url file duration artist isPremium createdAt",
     populate: {
       path: "artist",
       select: "user display_name",

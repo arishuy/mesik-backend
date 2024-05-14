@@ -27,7 +27,7 @@ const compareRanking = async () => {
     .sort({ date: -1 })
     .populate({
       path: "songs",
-      select: "title artist photo_url duration file play_count_daily",
+      select: "title artist photo_url duration file play_count_daily isPremium",
       populate: {
         path: "artist",
         select: "user display_name",

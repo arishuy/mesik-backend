@@ -14,6 +14,7 @@ const songSchema = new mongoose.Schema(
     play_count_daily: { type: Number, default: 0 },
     lyric: { type: String },
     release_date: { type: Date },
+    isPremium: { type: Boolean, default: false },
     region: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Region",

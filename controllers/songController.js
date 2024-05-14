@@ -159,7 +159,8 @@ const getLyricsFromSong = async (req, res, next) => {
 const updateSong = async (req, res, next) => {
   try {
     const { song_id } = req.params;
-    const { title, release_date, duration, genre, region, artist } = req.body;
+    const { title, release_date, duration, genre, region, artist, isPremium } =
+      req.body;
     const song = await songService.updateSong({
       song_id,
       title,
@@ -168,6 +169,7 @@ const updateSong = async (req, res, next) => {
       genre,
       region,
       artist,
+      isPremium,
     });
     res.json({ song });
   } catch (error) {

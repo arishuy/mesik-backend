@@ -10,7 +10,7 @@ const getSuggestedPlaylists = async (user_id) => {
       select: "title songs",
       populate: {
         path: "songs",
-        select: "title artist photo_url duration file",
+        select: "title artist photo_url duration file isPremium",
         populate: {
           path: "artist",
           select: "user display_name",
