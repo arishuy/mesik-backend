@@ -331,6 +331,16 @@ const handleVnpayReturn = async (req) => {
     if (!(transaction.transaction_status == transaction_status.PROCESSING)) {
       return { message: "Transaction was done or canceled" };
     }
+    // vnp_TransactionStatus = 00: Giao dịch thành công
+    // vnp_TransactionStatus = 01: Ngân hàng không xác nhận giao dịch
+    // vnp_TransactionStatus = 02: Giao dịch không thành công
+    // vnp_TransactionStatus = 24: Hủy giao dịch
+    if (vnp_Params["vnp_ResponseCode"] != "00") {
+      // test
+      transaction.transaction_status = transaction_status.CANCELED;
+      await transaction.save();
+      return { message: "Transaction failed" };
+    }
     // test
     transaction.transaction_status = transaction_status.DONE;
     await transaction.save();

@@ -14,7 +14,11 @@ import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 import { userMapper } from "./mapper/userMapper.js";
 import cloudinaryService from "./cloudinaryService.js";
-import { roles } from "../config/constant.js";
+import {
+  roles,
+  transaction_status,
+  transaction_types,
+} from "../config/constant.js";
 
 import dotenv, { populate } from "dotenv";
 
@@ -393,7 +397,8 @@ const buyPremiumPackage = async (user_id, premiumPackage_id) => {
   const transaction = await Transaction.create({
     user: user_id,
     amount: premiumPackage.price,
-    transaction_type: "BUY_PREMIUM",
+    transaction_type: transaction_types.BUY_PREMIUM,
+    transaction_status: transaction_status.DONE,
   });
   return user;
 };
