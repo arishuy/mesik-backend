@@ -382,6 +382,7 @@ const buyPremiumPackage = async (user_id, premiumPackage_id) => {
   }
   user.balance -= premiumPackage.price;
   if (!user.premiumStartDate) user.premiumStartDate = new Date();
+  if (!user.premiumEndDate) user.premiumEndDate = new Date();
   user.premiumEndDate = new Date(
     user.premiumEndDate.getTime() +
       premiumPackage.durationMonths * 30 * 24 * 60 * 60 * 1000
