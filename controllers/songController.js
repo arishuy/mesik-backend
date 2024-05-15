@@ -177,6 +177,52 @@ const updateSong = async (req, res, next) => {
   }
 };
 
+const updateSongByArtist = async (req, res, next) => {
+  try {
+    const { song_id } = req.params;
+    const user_id = req.authData.user._id;
+    const { title, release_date, duration, genre, region, artist, isPremium } =
+      req.body;
+    const result = await songService.updateSongByArtist({
+      user_id,
+      song_id,
+      title,
+      release_date,
+      duration,
+      genre,
+      region,
+      artist,
+      isPremium,
+    });
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const addLyricToSongByArtist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { song_id } = req.params;
+    const { lyric } = req.body;
+    await songService.addLyricToSongByArtist(user_id, song_id, lyric);
+    res.json({ message: "Added lyric to song successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteSongByArtist = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { song_id } = req.params;
+    await songService.deleteSongByArtist(user_id, song_id);
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -190,4 +236,7 @@ export default {
   addLyricToSong,
   getLyricsFromSong,
   updateSong,
+  updateSongByArtist,
+  addLyricToSongByArtist,
+  deleteSongByArtist,
 };

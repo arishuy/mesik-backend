@@ -333,6 +333,58 @@ const updateSong = async ({
   return song;
 };
 
+const updateSongByArtist = async ({
+  user_id,
+  song_id,
+  title,
+  release_date,
+  duration,
+  genre,
+  region,
+  artist,
+  isPremium,
+}) => {
+  const artist_id = await Artist.findOne({ user: user_id }).select("_id");
+  if (!artist_id) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User is not an artist");
+  }
+  const song = await Song.findOne({ _id: song_id, artist: artist_id });
+  if (!song) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Song not found");
+  }
+  song.title = title;
+  song.release_date = release_date;
+  song.duration = duration;
+  song.genre = genre;
+  song.region = region;
+  song.artist = artist;
+  song.isPremium = isPremium;
+
+  await song.save();
+  return song;
+};
+
+const addLyricToSongByArtist = async (user_id, song_id, lyric) => {
+  const artist_id = await Artist.findOne({ user: user_id }).select("_id");
+  if (!artist_id) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User is not an artist");
+  }
+  const song = await Song.findOne({ _id: song_id, artist: artist_id });
+  if (!song) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Song not found");
+  }
+  song.lyric = lyric;
+  await song.save();
+};
+
+const deleteSongByArtist = async (user_id, song_id) => {
+  const artist_id = await Artist.findOne({ user: user_id }).select("_id");
+  if (!artist_id) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User is not an artist");
+  }
+  await Song.deleteOne({ _id: song_id, artist: artist_id });
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -347,4 +399,7 @@ export default {
   getLyricsFromSong,
   updateSong,
   fetchSongByArtistPaginate,
+  updateSongByArtist,
+  addLyricToSongByArtist,
+  deleteSongByArtist
 };

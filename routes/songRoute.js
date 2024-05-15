@@ -60,5 +60,24 @@ router.put(
   trimRequest.all,
   controller.updateSong
 );
+// artist
+router.put(
+  "/artist/:song_id",
+  auth,
+  checkRole([roles.ARTIST]),
+  controller.updateSongByArtist
+);
+router.delete(
+  "/artist/:song_id",
+  auth,
+  checkRole([roles.ARTIST]),
+  controller.updateSongByArtist
+);
+router.post(
+  "/artist/lyric/:song_id",
+  auth,
+  checkRole([roles.ARTIST]),
+  controller.addLyricToSongByArtist
+);
 
 export default router;
