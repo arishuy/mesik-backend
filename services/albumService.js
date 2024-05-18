@@ -92,14 +92,9 @@ const incresasePlayCount = async (user_id, album_id) => {
   if (!album) {
     throw new Error("Album not found");
   }
-  // Update song's play count
-  const listening = await Listening.create({
-    user: user_id,
-    song: album_id,
-  });
   album.total_listenings += 1;
   await album.save();
-  return listening;
+  return album;
 };
 
 const getFamousAlbums = async () => {
