@@ -6,11 +6,11 @@ import { uploadImage } from "../middlewares/upload.js";
 import trimRequest from "trim-request";
 
 const router = express.Router();
-
+router.get("/top-4-album", controller.getFamousAlbums);
 router.post(
   "",
   uploadImage.single("photo"),
-  trimRequest.all,  
+  trimRequest.all,
   controller.createAlbum
 );
 router.get("/:album_id", controller.getAlbumById);
@@ -21,6 +21,12 @@ router.delete(
   auth,
   checkRole([roles.ARTIST, roles.ADMIN]),
   controller.deleteAlbum
+);
+router.post(
+  "/play",
+  auth,
+  checkRole([roles.USER, roles.ARTIST, roles.ADMIN]),
+  controller.incresasePlayCount
 );
 
 export default router;

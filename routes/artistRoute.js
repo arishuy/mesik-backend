@@ -8,5 +8,6 @@ router.post("/", artistController.createArtist);
 router.get("/", artistController.getArtists);
 router.get("/:artist_id", artistController.getArtistById);
 router.delete("/:artist_id", artistController.deleteArtist);
+router.get("/:artist_id/related", artistController.getRelatedArtists);
 
 export default router;

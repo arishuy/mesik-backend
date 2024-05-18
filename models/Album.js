@@ -7,6 +7,7 @@ const albumSchema = new mongoose.Schema(
     songs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Song" }], // Array of Song IDs
     photo_url: String,
     photo_public_id: String,
+    total_listenings: { type: Number, default: 0 },
   },
   {
     timestamps: true,

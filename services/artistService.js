@@ -77,11 +77,21 @@ const fetchArtists = async (page = 1, limit = 10) => {
 const deleteArtistById = async (artist_id) => {
   await Artist.deleteOne({ _id: artist_id });
 };
-
+const getRelatedArtists = async (artist_id) => {
+  const artist = await Artist.findById(artist_id);
+  const artists = await Artist.find({
+    _id: { $ne: artist_id },
+  })
+    .limit(6)
+    .sort({ total_followers: -1 })
+    .populate("user", "first_name last_name photo_url");
+  return artists;
+};
 export default {
   createArtist,
   fetchArtists,
   fetch5Artists,
   fetchArtistById,
   deleteArtistById,
+  getRelatedArtists,
 };

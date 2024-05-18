@@ -1,4 +1,4 @@
-import { Album, Artist } from "../models/index.js";
+import { Album, Artist, Listening, User } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 
 const createAlbum = async ({ title, song_id, artist_id, photo }) => {
@@ -81,6 +81,45 @@ const deleteAlbumByArtist = async (album_id, user_id) => {
   }
   await Album.deleteOne({ _id: album_id });
 };
+
+const incresasePlayCount = async (user_id, album_id) => {
+  // Fetch user data
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const album = await Album.findById(album_id);
+  if (!album) {
+    throw new Error("Album not found");
+  }
+  // Update song's play count
+  const listening = await Listening.create({
+    user: user_id,
+    song: album_id,
+  });
+  album.total_listenings += 1;
+  await album.save();
+  return listening;
+};
+
+const getFamousAlbums = async () => {
+  const albums = await Album.find()
+    .sort({ total_listenings: -1 })
+    .limit(4)
+    .populate({
+      path: "songs",
+      select: "title photo_url file duration artist isPremium",
+      populate: {
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    });
+  return albums;
+};
 export default {
   createAlbum,
   fetchAlbums,
@@ -88,4 +127,6 @@ export default {
   fetchAlbumByArtist,
   deleteAlbumById,
   deleteAlbumByArtist,
+  incresasePlayCount,
+  getFamousAlbums,
 };

@@ -53,10 +53,21 @@ const deleteArtist = async (req, res, next) => {
   }
 };
 
+const getRelatedArtists = async (req, res, next) => {
+  try {
+    const { artist_id } = req.params;
+    const artists = await artistService.getRelatedArtists(artist_id);
+    res.json({ artists });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createArtist,
   getArtists,
   getArtistById,
   deleteArtist,
   get5Artists,
+  getRelatedArtists,
 };
