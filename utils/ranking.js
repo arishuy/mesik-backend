@@ -24,6 +24,8 @@ const calculateAndSaveDailyListenings = async () => {
       },
     ]);
     console.log(listenings);
+    // reset số lượt nghe của tất cả bài hát về 0
+    await Song.updateMany({}, { play_count_daily: 0 });
     // Lưu số lượt nghe vào cơ sở dữ liệu
     for (const listening of listenings) {
       const { _id: songId, total_listenings: playCount } = listening;

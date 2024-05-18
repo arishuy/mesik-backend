@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 // Lập lịch để chạy cron job vào 12:00 mỗi đêm (0 giờ, 0 phút, 0 giây)
 cron.schedule(
-  "0 0 0 * * *",
+  "0 0 * * *",
   async () => {
     console.log("Starting cron job to calculate and save daily listenings...");
     await calculateAndSaveDailyListenings();
