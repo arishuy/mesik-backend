@@ -9,6 +9,9 @@ import {
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
 import Axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
+
 const createSong = async ({
   title,
   release_date,
@@ -264,7 +267,8 @@ const incresasePlayCount = async (user_id, song_id) => {
     if (length_after % 5 === 0 || length_after === 1) {
       // khi thỏa mãn điều kiện, sẽ gọi đến API bên ngoài để lấy về 5 bài hát tương tự và thêm chúng vào playlist gợi ý
       await Axios.get(
-        `https://mesik-recommendation.onrender.com/recommend?song_id=${song_id}`
+        // `https://mesik-recommendation.onrender.com/recommend?song_id=${song_id}`
+        process.env.RECOMMEND_ENDPOINT + `/recommend?song_id=${song_id}`
       )
         .then(async (response) => {
           const list_songId = response.data.map((song) => song._id);
@@ -401,5 +405,5 @@ export default {
   fetchSongByArtistPaginate,
   updateSongByArtist,
   addLyricToSongByArtist,
-  deleteSongByArtist
+  deleteSongByArtist,
 };
