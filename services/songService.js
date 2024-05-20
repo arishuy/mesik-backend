@@ -5,6 +5,7 @@ import {
   Listening,
   SuggestedPlaylist,
   Playlist,
+  TokenizedLyrics,
 } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
@@ -303,6 +304,19 @@ const incresasePlayCount = async (user_id, song_id) => {
 
 const addLyricToSong = async (song_id, lyric) => {
   await Song.findByIdAndUpdate(song_id, { lyric: lyric });
+  const tokenizedLyrics = await Axios.post(
+    // `https://mesik-lyrics.onrender.com/tokenize`,
+    process.env.RECOMMEND_ENDPOINT + `/add_lyrics`,
+    {
+      id: song_id,
+      lyric: lyric,
+    }
+  );
+  await TokenizedLyrics.findOneAndUpdate(
+    { song: song_id },
+    { song: song_id, lyric: tokenizedLyrics.data.processed_lyrics },
+    { upsert: true }
+  );
 };
 
 const getLyricsFromSong = async (song_id) => {
@@ -379,6 +393,20 @@ const addLyricToSongByArtist = async (user_id, song_id, lyric) => {
   }
   song.lyric = lyric;
   await song.save();
+  const tokenizedLyrics = await Axios.post(
+    // `https://mesik-lyrics.onrender.com/tokenize`,
+    process.env.RECOMMEND_ENDPOINT + `/add_lyrics`,
+    {
+      id: song_id,
+      lyric: lyric,
+    }
+  );
+  // create or update tokenized lyrics
+  await TokenizedLyrics.findOneAndUpdate(
+    { song: song_id },
+    { song: song_id, lyric: tokenizedLyrics.data.processed_lyrics },
+    { upsert: true }
+  );
 };
 
 const deleteSongByArtist = async (user_id, song_id) => {
