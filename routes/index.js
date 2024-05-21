@@ -21,8 +21,8 @@ const router = express.Router();
 
 router.use("/auth", authRoute);
 router.use("/users", userRoute);
-router.use("/push-token", pushTokenRoute);
 router.use("/songs", songRoute);
+router.use("/push-token", pushTokenRoute);
 router.use("/playlists", playlistRoute);
 router.use("/artists", artistRoute);
 router.use("/albums", albumRoute);

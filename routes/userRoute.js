@@ -51,21 +51,10 @@ router.put(
   controller.changePassword
 );
 router.post(
-  "/current/promote-to-expert",
-  auth,
-  checkRole([roles.USER]),
-  controller.promoteToExpert
-);
-router.post(
   "/current/promote-to-artist",
   auth,
   checkRole([roles.USER]),
   controller.promoteToArtist
-);
-router.get(
-  "/current/job_requests",
-  auth,
-  controller.getJobRequestsPaginationOfCurrentUser
 );
 router.get(
   "/current/transactions",
@@ -113,12 +102,6 @@ router.put(
   checkRole([roles.ADMIN]),
   controller.disableUser
 );
-router.get(
-  "/:user_id/job_requests",
-  auth,
-  controller.getJobRequestsPaginationByUserId
-);
-
 router.post(
   "/premium-package/:premiumPackage_id",
   auth,
