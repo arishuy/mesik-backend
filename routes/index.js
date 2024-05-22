@@ -16,6 +16,7 @@ import suggestedPlaylistRoute from "./suggestedPlaylistRoute.js";
 import reportRoute from "./reportRoute.js";
 import transactionRoute from "./transactionRoute.js";
 import premiumPackageRoute from "./premiumPackageRoute.js";
+import statisticsRoute from "./statisticsRoute.js";
 
 const router = express.Router();
 
@@ -37,5 +38,6 @@ router.use("/regions", regionRoute);
 router.use("/transactions", transactionRoute);
 router.use("/suggested-playlists", suggestedPlaylistRoute);
 router.use("/premium-packages", premiumPackageRoute);
+router.use("/statistics", statisticsRoute);
 
 export default router;

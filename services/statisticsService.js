@@ -7,10 +7,14 @@ import {
   transaction_types,
 } from "../config/constant.js";
 import {
+  Album,
   ExpertInfo,
+  Genre,
   JobRequest,
   Major,
+  Playlist,
   Review,
+  Song,
   Transaction,
   User,
 } from "../models/index.js";
@@ -18,57 +22,40 @@ import ApiError from "../utils/ApiError.js";
 
 const getStatisticsForAdmin = async () => {
   const [
-    job_request_count,
-    job_request_pending_count,
-    job_request_processing_count,
-    job_request_done_count,
-    job_request_canceled_count,
-    expert_count,
+    song_count,
+    transaction_cancel_count,
+    transaction_processing_count,
+    transaction_done_count,
+    artist_count,
     user_count,
-    major_count,
-    reviews,
+    genre_count,
+    album_count,
+    playlist_count,
     total_deposit_amount,
   ] = await Promise.all([
-    JobRequest.count({}),
-    JobRequest.count({ status: job_request_status.PENDING }),
-    JobRequest.count({ status: job_request_status.PROCESSING }),
-    JobRequest.count({ status: job_request_status.DONE }),
-    JobRequest.count({ status: job_request_status.CANCELED }),
-    User.count({ role: roles.EXPERT }),
+    Song.count({}),
+    Transaction.count({ transaction_status: transaction_status.CANCELED }),
+    Transaction.count({ transaction_status: transaction_status.PROCESSING }),
+    Transaction.count({ transaction_status: transaction_status.DONE }),
+    User.count({ role: roles.ARTIST }),
     User.count({ role: roles.USER }),
-    Major.count({}),
-    Review.find({})
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .populate([
-        {
-          path: "user",
-          select: "first_name last_name photo_url",
-        },
-        {
-          path: "expert",
-          select: "user",
-          populate: {
-            path: "user",
-            select: "first_name last_name photo_url",
-          },
-        },
-      ])
-      .lean(),
+    Genre.count({}),
+    Album.count({}),
+    Playlist.count({}),
     getTotalDepositAmount(),
   ]);
 
   return {
-    job_request_count,
-    job_request_pending_count,
-    job_request_processing_count,
-    job_request_done_count,
-    job_request_canceled_count,
-    expert_count,
+    song_count,
+    transaction_cancel_count,
+    transaction_processing_count,
+    transaction_done_count,
+    artist_count,
     user_count,
-    major_count,
+    genre_count,
+    album_count,
+    playlist_count,
     total_deposit_amount,
-    reviews,
   };
 };
 
