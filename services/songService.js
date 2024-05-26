@@ -6,6 +6,7 @@ import {
   SuggestedPlaylist,
   Playlist,
   TokenizedLyrics,
+  Region,
 } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
@@ -140,7 +141,7 @@ const deleteSongById = async (song_id) => {
 const fetch6SongsRelease = async () => {
   const songs = await Song.find({})
     .sort({ release_date: -1 })
-    .limit(6)
+    .limit(9)
     .lean()
     .populate({
       path: "artist",
@@ -154,7 +155,41 @@ const fetch6SongsRelease = async () => {
   for (const song of songs)
     song.play_count = await Listening.countDocuments({ song: song._id });
 
-  return songs;
+  const vn_region = await Region.findOne({ name: "Việt Nam" });
+
+  const songs_vn = await Song.find({ region: vn_region._id })
+    .sort({ release_date: -1 })
+    .limit(9)
+    .lean()
+    .populate({
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    });
+
+  for (const song of songs_vn)
+    song.play_count = await Listening.countDocuments({ song: song._id });
+
+  const another_songs = await Song.find({ region: { $ne: vn_region._id } })
+    .sort({ release_date: -1 })
+    .limit(9)
+    .lean()
+    .populate({
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    });
+
+  for (const song of another_songs)
+    song.play_count = await Listening.countDocuments({ song: song._id });
+
+  return { songs, songs_vn, another_songs };
 };
 
 const fetchRandomSongs = async () => {

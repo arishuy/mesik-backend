@@ -26,6 +26,7 @@ import Region from "./Region.js";
 import SuggestedPlaylist from "./SuggestedPlaylist.js";
 import PremiumPackage from "./PremiumPackage.js";
 import TokenizedLyrics from "./TokenizedLyrics.js";
+import Section from "./Section.js";
 
 export {
   Certificate,
@@ -56,4 +57,5 @@ export {
   SuggestedPlaylist,
   PremiumPackage,
   TokenizedLyrics,
+  Section,
 };
