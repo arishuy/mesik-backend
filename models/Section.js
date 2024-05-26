@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const sectionSchema = new mongoose.Schema(
   {
@@ -11,6 +12,7 @@ const sectionSchema = new mongoose.Schema(
   }
 );
 
+sectionSchema.plugin(mongoosePaginate);
 const Section = mongoose.model("Section", sectionSchema);
 
 export default Section;

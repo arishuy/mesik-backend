@@ -3,7 +3,15 @@ import playlistService from "../services/playlistService.js";
 const createPlaylist = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { title } = req.body;
+    const { title, song_id } = req.body;
+    if (song_id) {
+      const playlist = await playlistService.createPlaylistWithSongs({
+        title,
+        user_id,
+        song_id,
+      });
+      return res.json({ playlist });
+    }
     const playlist = await playlistService.createPlaylist({
       title,
       user_id,

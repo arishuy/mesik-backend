@@ -1,11 +1,11 @@
+import { populate } from "dotenv";
 import { Section } from "../models/index.js";
 
 const createSection = async ({ name, items }) => {
   const section = await Section.create({
     name: name,
-    item: items,
+    items: items,
   });
-
   return section;
 };
 
@@ -24,6 +24,22 @@ const fetchSections = async (page = 1, limit = 10) => {
       lean: true,
       customLabels: {
         docs: "sections",
+      },
+      populate: {
+        path: "items",
+        select: "title songs",
+        populate: {
+          path: "songs",
+          select: "title artist photo_url duration file isPremium",
+          populate: {
+            path: "artist",
+            select: "user display_name",
+            populate: {
+              path: "user",
+              select: "first_name last_name photo_url",
+            },
+          },
+        },
       },
     }
   );

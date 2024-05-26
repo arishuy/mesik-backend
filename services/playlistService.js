@@ -10,6 +10,16 @@ const createPlaylist = async ({ title, user_id }) => {
   return playlist;
 };
 
+const createPlaylistWithSongs = async ({ title, user_id, song_id }) => {
+  const playlist = await Playlist.create({
+    title: title,
+    user: user_id,
+    songs: song_id,
+  });
+
+  return playlist;
+};
+
 const fetchPlaylistById = async (playlist_id) => {
   const playlist = await Playlist.findById(playlist_id).populate({
     path: "songs",
@@ -122,4 +132,5 @@ export default {
   addSongToPlaylist,
   removeSongFromPlaylist,
   updatePlaylist,
+  createPlaylistWithSongs,
 };
