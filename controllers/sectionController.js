@@ -61,10 +61,21 @@ const updateSectionById = async (req, res, next) => {
   }
 };
 
+const fetch4Sections = async (req, res, next) => {
+  try {
+    const sections = await sectionService.fetch4Sections();
+
+    res.json({ sections });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSection,
   getSections,
   getSectionById,
   deleteSection,
   updateSectionById,
+  fetch4Sections,
 };

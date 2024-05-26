@@ -4,7 +4,7 @@ import { roles } from "../config/constant.js";
 import controller from "../controllers/sectionController.js";
 
 const router = express.Router();
-
+router.get("/new", controller.fetch4Sections);
 router.post("", auth, checkRole([roles.ADMIN]), controller.createSection);
 router.put(
   "/:section_id",

@@ -27,7 +27,7 @@ const fetchSections = async (page = 1, limit = 10) => {
       },
       populate: {
         path: "items",
-        select: "title songs",
+        select: "title songs photo_url",
         populate: {
           path: "songs",
           select: "title artist photo_url duration file isPremium",
@@ -58,11 +58,33 @@ const updateSectionById = async (section_id, { name, items }) => {
   );
   return section;
 };
-
+const fetch4Sections = async () => {
+  const sections = await Section.find({})
+    .limit(4)
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "items",
+      select: "title songs photo_url",
+      populate: {
+        path: "songs",
+        select: "title artist photo_url duration file isPremium",
+        populate: {
+          path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        },
+      },
+    });
+  return sections;
+};
 export default {
   createSection,
   fetchSections,
   fetchSectionById,
   deleteSectionById,
   updateSectionById,
+  fetch4Sections,
 };

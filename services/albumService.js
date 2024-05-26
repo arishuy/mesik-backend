@@ -48,7 +48,9 @@ const fetchAlbumByArtist = async (artist_id) => {
 };
 const fetchAlbums = async (page = 1, limit = 10) => {
   const pagination = await Album.paginate(
-    {},
+    {
+      artist: { $ne: null },
+    },
     {
       sort: { createdAt: -1 },
       page,
