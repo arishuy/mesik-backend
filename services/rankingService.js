@@ -1,4 +1,4 @@
-import { Ranking, Song } from "../models/index.js";
+import { Listening, Ranking, Region, Song } from "../models/index.js";
 
 const updateDailyRanking = async () => {
   try {
@@ -81,7 +81,152 @@ const compareRanking = async () => {
   return changedSongs;
 };
 
+const vietnamRankings = async () => {
+  // Vietnam chart
+  const vn_region = await Region.findOne({ name: "Việt Nam" });
+
+  if (!vn_region) {
+    throw new Error("Region 'Việt Nam' not found");
+  }
+
+  // Aggregation pipeline for top songs in Vietnam
+  const vnTopSongs = await Song.aggregate([
+    { $match: { region: vn_region._id } },
+    {
+      $lookup: {
+        from: "listenings",
+        localField: "_id",
+        foreignField: "song",
+        as: "play_count_docs",
+      },
+    },
+    {
+      $addFields: {
+        play_count: { $size: "$play_count_docs" },
+      },
+    },
+    {
+      $lookup: {
+        from: "artists",
+        localField: "artist",
+        foreignField: "_id",
+        as: "artist",
+      },
+    },
+    {
+      $unwind: "$artist",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "artist.user",
+        foreignField: "_id",
+        as: "artist.user",
+      },
+    },
+    {
+      $unwind: "$artist.user",
+    },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        artist: {
+          _id: 1,
+          display_name: 1,
+          user: {
+            first_name: 1,
+            last_name: 1,
+            photo_url: 1,
+          },
+        },
+        play_count: 1,
+        duration: 1,
+        file: 1,
+        isPremium: 1,
+        photo_url: 1,
+      },
+    },
+    { $sort: { play_count: -1 } },
+    { $limit: 10 },
+  ]);
+
+  return vnTopSongs;
+};
+
+const otherRegionRankings = async () => {
+  const vn_region = await Region.findOne({ name: "Việt Nam" });
+
+  if (!vn_region) {
+    throw new Error("Region 'Việt Nam' not found");
+  }
+  // Aggregation pipeline for top songs in other regions
+  const anotherTopSongs = await Song.aggregate([
+    { $match: { region: { $ne: vn_region._id } } },
+    {
+      $lookup: {
+        from: "listenings",
+        localField: "_id",
+        foreignField: "song",
+        as: "play_count_docs",
+      },
+    },
+    {
+      $addFields: {
+        play_count: { $size: "$play_count_docs" },
+      },
+    },
+    {
+      $lookup: {
+        from: "artists",
+        localField: "artist",
+        foreignField: "_id",
+        as: "artist",
+      },
+    },
+    {
+      $unwind: "$artist",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "artist.user",
+        foreignField: "_id",
+        as: "artist.user",
+      },
+    },
+    {
+      $unwind: "$artist.user",
+    },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        artist: {
+          _id: 1,
+          display_name: 1,
+          user: {
+            first_name: 1,
+            last_name: 1,
+            photo_url: 1,
+          },
+        },
+        play_count: 1,
+        duration: 1,
+        file: 1,
+        isPremium: 1,
+        photo_url: 1,
+      },
+    },
+    { $sort: { play_count: -1 } },
+    { $limit: 10 },
+  ]);
+  return anotherTopSongs;
+};
+
 export default {
   updateDailyRanking,
   compareRanking,
+  vietnamRankings,
+  otherRegionRankings,
 };

@@ -1,4 +1,6 @@
+import httpStatus from "http-status";
 import { Playlist } from "../models/index.js";
+import ApiError from "../utils/ApiError.js";
 
 const createPlaylist = async ({ title, user_id }) => {
   const playlist = await Playlist.create({
@@ -95,7 +97,10 @@ const addSongToPlaylist = async (playlist_id, song_id, user_id) => {
   // check if song already exists in playlist
   for (let song of playlist.songs) {
     if (song.toString() === song_id.toString()) {
-      throw new Error("Song already exists in playlist");
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Song already exists in playlist"
+      );
     }
   }
   playlist.songs.push(song_id);
