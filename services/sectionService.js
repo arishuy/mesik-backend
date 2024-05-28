@@ -30,7 +30,7 @@ const fetchSections = async (page = 1, limit = 10) => {
         select: "title songs photo_url",
         populate: {
           path: "songs",
-          select: "title artist photo_url duration file isPremium",
+          select: "title artist photo_url duration file isPremium lyric",
           populate: {
             path: "artist",
             select: "user display_name",
@@ -67,7 +67,7 @@ const fetch4Sections = async () => {
       select: "title songs photo_url",
       populate: {
         path: "songs",
-        select: "title artist photo_url duration file isPremium",
+        select: "title artist photo_url duration file isPremium lyric",
         populate: {
           path: "artist",
           select: "user display_name",

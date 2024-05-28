@@ -27,7 +27,8 @@ const compareRanking = async () => {
     .sort({ date: -1 })
     .populate({
       path: "songs",
-      select: "title artist photo_url duration file play_count_daily isPremium",
+      select:
+        "title artist photo_url duration file play_count_daily isPremium lyric",
       populate: {
         path: "artist",
         select: "user display_name",
@@ -43,7 +44,8 @@ const compareRanking = async () => {
     .skip(1)
     .populate({
       path: "songs",
-      select: "title artist photo_url duration file",
+      select:
+        "title artist photo_url duration file play_count_daily isPremium lyric",
       populate: {
         path: "artist",
         select: "user",
@@ -145,6 +147,7 @@ const vietnamRankings = async () => {
         file: 1,
         isPremium: 1,
         photo_url: 1,
+        lyric: 1,
       },
     },
     { $sort: { play_count: -1 } },
@@ -216,6 +219,7 @@ const otherRegionRankings = async () => {
         file: 1,
         isPremium: 1,
         photo_url: 1,
+        lyric: 1,
       },
     },
     { $sort: { play_count: -1 } },
