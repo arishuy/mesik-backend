@@ -134,6 +134,16 @@ const fetchSongs = async (page = 1, limit = 10, name = "", genre = "all") => {
   return pagination;
 };
 
+const fetchAllSongs = async () => {
+  const songs = await Song.find({})
+    .populate({
+      path: "artist",
+      select: "user display_name",
+    })
+    .sort({ title: 1 });
+  return songs;
+};
+
 const deleteSongById = async (song_id) => {
   await Song.deleteOne({ _id: song_id });
 };
@@ -469,4 +479,5 @@ export default {
   updateSongByArtist,
   addLyricToSongByArtist,
   deleteSongByArtist,
+  fetchAllSongs,
 };

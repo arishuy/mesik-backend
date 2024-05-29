@@ -38,4 +38,13 @@ router.put(
   controller.updateAlbumByArtist
 );
 
+router.put(
+  "/admin/:album_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  uploadImage.single("photo"),
+  trimRequest.all,
+  controller.updateAlbumByAdmin
+);
+
 export default router;

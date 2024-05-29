@@ -149,6 +149,23 @@ const updateAlbumByArtist = async ({
   await album.save();
   return album;
 };
+
+const updateAlbumByAdmin = async ({ album_id, title, song_id, photo }) => {
+  const album = await Album.findOne({ _id: album_id });
+  if (!album) {
+    throw new Error("Album not found");
+  }
+  let response;
+  if (photo) {
+    response = await cloudinaryService.upload(photo);
+  }
+  album.title = title;
+  album.songs = song_id;
+  album.photo_url = response ? response.url : album.photo_url;
+  album.photo_public_id = response ? response.public_id : album.photo_public_id;
+  await album.save();
+  return album;
+};
 export default {
   createAlbum,
   fetchAlbums,
@@ -159,4 +176,5 @@ export default {
   incresasePlayCount,
   getFamousAlbums,
   updateAlbumByArtist,
+  updateAlbumByAdmin,
 };

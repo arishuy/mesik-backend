@@ -68,8 +68,13 @@ const getSongById = async (req, res, next) => {
 const getSongs = async (req, res, next) => {
   try {
     const { page, limit, name, genre } = req.query;
-    const pagination = await songService.fetchSongs(page, limit, name, genre);
-    res.json({ pagination });
+    if (page && limit) {
+      const pagination = await songService.fetchSongs(page, limit, name, genre);
+      return res.json({ pagination });
+    } else {
+      const songs = await songService.fetchAllSongs();
+      return res.json({ songs });
+    }
   } catch (error) {
     next(error);
   }

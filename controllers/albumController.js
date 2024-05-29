@@ -100,6 +100,27 @@ const updateAlbumByArtist = async (req, res, next) => {
     next(error);
   }
 };
+
+const updateAlbumByAdmin = async (req, res, next) => {
+  try {
+    const { album_id } = req.params;
+    const { title, song_id } = req.body;
+    if (req.authData.user.role === "ADMIN") {
+      const photo = req.file;
+      const album = await albumService.updateAlbumByAdmin({
+        album_id,
+        title,
+        song_id,
+        photo,
+      });
+      res.json({ album });
+    } else {
+      throw new Error("You are not authorized to perform this action");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 export default {
   createAlbum,
   getAlbums,
@@ -109,4 +130,5 @@ export default {
   incresasePlayCount,
   getFamousAlbums,
   updateAlbumByArtist,
+  updateAlbumByAdmin
 };
