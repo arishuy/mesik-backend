@@ -17,18 +17,23 @@ const createAlbum = async ({ title, song_id, artist_id, photo }) => {
 };
 
 const fetchAlbumById = async (album_id) => {
-  const album = await Album.findById(album_id).populate({
-    path: "songs",
-    select: "title photo_url file duration artist createdAt isPremium lyric",
-    populate: {
+  const album = await Album.findById(album_id)
+    .populate({
+      path: "songs",
+      select: "title photo_url file duration artist createdAt isPremium lyric",
+      populate: {
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    })
+    .populate({
       path: "artist",
       select: "user display_name",
-      populate: {
-        path: "user",
-        select: "first_name last_name photo_url",
-      },
-    },
-  });
+    });
   return album;
 };
 const fetchAlbumByArtist = async (artist_id) => {
@@ -117,6 +122,33 @@ const getFamousAlbums = async () => {
     });
   return albums;
 };
+
+const updateAlbumByArtist = async ({
+  album_id,
+  user_id,
+  title,
+  song_id,
+  photo,
+}) => {
+  const artist = await Artist.findOne({ user: user_id });
+  if (!artist) {
+    throw new Error("Artist not found");
+  }
+  const album = await Album.findOne({ _id: album_id, artist: artist });
+  if (!album) {
+    throw new Error("Album not found");
+  }
+  let response;
+  if (photo) {
+    response = await cloudinaryService.upload(photo);
+  }
+  album.title = title;
+  album.songs = song_id;
+  album.photo_url = response ? response.url : album.photo_url;
+  album.photo_public_id = response ? response.public_id : album.photo_public_id;
+  await album.save();
+  return album;
+};
 export default {
   createAlbum,
   fetchAlbums,
@@ -126,4 +158,5 @@ export default {
   deleteAlbumByArtist,
   incresasePlayCount,
   getFamousAlbums,
+  updateAlbumByArtist,
 };

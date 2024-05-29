@@ -81,6 +81,25 @@ const getFamousAlbums = async (req, res, next) => {
     next(error);
   }
 };
+
+const updateAlbumByArtist = async (req, res, next) => {
+  try {
+    const { album_id } = req.params;
+    const user_id = req.authData.user._id;
+    const { title, song_id } = req.body;
+    const photo = req.file;
+    const album = await albumService.updateAlbumByArtist({
+      album_id,
+      user_id,
+      title,
+      song_id,
+      photo,
+    });
+    res.json({ album });
+  } catch (error) {
+    next(error);
+  }
+};
 export default {
   createAlbum,
   getAlbums,
@@ -89,4 +108,5 @@ export default {
   fetchAlbumByArtist,
   incresasePlayCount,
   getFamousAlbums,
+  updateAlbumByArtist,
 };

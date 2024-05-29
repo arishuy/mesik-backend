@@ -29,4 +29,13 @@ router.post(
   controller.incresasePlayCount
 );
 
+router.put(
+  "/:album_id",
+  auth,
+  checkRole([roles.ARTIST]),
+  uploadImage.single("photo"),
+  trimRequest.all,
+  controller.updateAlbumByArtist
+);
+
 export default router;
