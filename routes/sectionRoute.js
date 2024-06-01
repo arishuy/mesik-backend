@@ -5,6 +5,7 @@ import controller from "../controllers/sectionController.js";
 
 const router = express.Router();
 router.get("/new", controller.fetch4Sections);
+router.get("/banner", controller.getBannerSection);
 router.post("", auth, checkRole([roles.ADMIN]), controller.createSection);
 router.put(
   "/:section_id",

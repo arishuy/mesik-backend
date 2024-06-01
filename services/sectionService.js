@@ -9,41 +9,66 @@ const createSection = async ({ name, items }) => {
   return section;
 };
 
+const updateSection = async (section_id, { name }) => {
+  const section = await Section.findByIdAndUpdate(
+    section_id,
+    { name },
+    { new: true }
+  );
+  return section;
+};
+
 const fetchSectionById = async (section_id) => {
   const section = await Section.findById(section_id);
   return section;
 };
 
 const fetchSections = async (page = 1, limit = 10) => {
-  const pagination = await Section.paginate(
-    {},
-    {
-      sort: { createdAt: -1 },
-      page,
-      limit,
-      lean: true,
-      customLabels: {
-        docs: "sections",
-      },
+  const sections = await Section.find({}).populate({
+    path: "items",
+    select: "title songs photo_url",
+    populate: {
+      path: "songs",
+      select: "title artist photo_url duration file isPremium lyric",
       populate: {
-        path: "items",
-        select: "title songs photo_url",
+        path: "artist",
+        select: "user display_name",
         populate: {
-          path: "songs",
-          select: "title artist photo_url duration file isPremium lyric",
-          populate: {
-            path: "artist",
-            select: "user display_name",
-            populate: {
-              path: "user",
-              select: "first_name last_name photo_url",
-            },
-          },
+          path: "user",
+          select: "first_name last_name photo_url",
         },
       },
-    }
-  );
-  return pagination;
+    },
+  });
+  // const pagination = await Section.paginate(
+  //   {},
+  //   {
+  //     sort: { createdAt: -1 },
+  //     page,
+  //     limit,
+  //     lean: true,
+  //     customLabels: {
+  //       docs: "sections",
+  //     },
+  //     populate: {
+  //       path: "items",
+  //       select: "title songs photo_url",
+  //       populate: {
+  //         path: "songs",
+  //         select: "title artist photo_url duration file isPremium lyric",
+  //         populate: {
+  //           path: "artist",
+  //           select: "user display_name",
+  //           populate: {
+  //             path: "user",
+  //             select: "first_name last_name photo_url",
+  //           },
+  //         },
+  //       },
+  //     },
+  //   }
+  // );
+  return sections;
 };
 
 const deleteSectionById = async (section_id) => {
@@ -59,7 +84,9 @@ const updateSectionById = async (section_id, { name, items }) => {
   return section;
 };
 const fetch4Sections = async () => {
-  const sections = await Section.find({})
+  const sections = await Section.find({
+    type: "section",
+  })
     .limit(4)
     .sort({ createdAt: -1 })
     .populate({
@@ -80,6 +107,19 @@ const fetch4Sections = async () => {
     });
   return sections;
 };
+
+const getBannerSection = async () => {
+  const sections = await Section.find({
+    type: "banner",
+  })
+    .limit(1)
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "items",
+      select: "title songs photo_url",
+    });
+  return sections;
+};
 export default {
   createSection,
   fetchSections,
@@ -87,4 +127,6 @@ export default {
   deleteSectionById,
   updateSectionById,
   fetch4Sections,
+  updateSection,
+  getBannerSection,
 };

@@ -13,6 +13,18 @@ const createSection = async (req, res, next) => {
   }
 };
 
+const updateSection = async (req, res, next) => {
+  try {
+    const { section_id } = req.params;
+    const { name } = req.body;
+    const section = await sectionService.updateSection(section_id, { name });
+
+    res.json({ section });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getSectionById = async (req, res, next) => {
   try {
     const { section_id } = req.params;
@@ -27,9 +39,9 @@ const getSectionById = async (req, res, next) => {
 const getSections = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
-    const pagination = await sectionService.fetchSections(page, limit);
+    const sections = await sectionService.fetchSections(page, limit);
 
-    res.json({ pagination });
+    res.json({ sections });
   } catch (error) {
     next(error);
   }
@@ -71,11 +83,23 @@ const fetch4Sections = async (req, res, next) => {
   }
 };
 
+const getBannerSection = async (req, res, next) => {
+  try {
+    const sections = await sectionService.getBannerSection();
+
+    res.json({ sections });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSection,
+  updateSection,
   getSections,
   getSectionById,
   deleteSection,
   updateSectionById,
   fetch4Sections,
+  getBannerSection,
 };
