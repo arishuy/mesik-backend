@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
       default: roles.USER,
     },
     isRestricted: { type: Boolean, default: false },
-    isConfirmed: { type: Boolean, default: true },
+    isConfirmed: { type: Boolean, default: false },
     providers: { type: [String], default: [] },
     balance: { type: Number, min: 0, default: 0 },
     lastLoginTime: { type: Date, default: () => Date.now() },
