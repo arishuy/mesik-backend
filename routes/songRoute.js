@@ -11,6 +11,7 @@ router.get("/artist/:artist_id", controller.fetchSongByArtist);
 router.get("/release", controller.fetch5SongsRelease);
 router.get("/random", controller.fetchRandomSongs);
 router.get("/lyric/:song_id", controller.getLyricsFromSong);
+router.post("/next-play", controller.addSongToPlaying);
 router.post(
   "/lyric/:song_id",
   auth,

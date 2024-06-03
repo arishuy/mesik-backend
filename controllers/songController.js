@@ -228,6 +228,16 @@ const deleteSongByArtist = async (req, res, next) => {
   }
 };
 
+const addSongToPlaying = async (req, res, next) => {
+  try {
+    const { song_id } = req.body;
+    const result = await songService.addSongToPlaying(song_id);
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -244,4 +254,5 @@ export default {
   updateSongByArtist,
   addLyricToSongByArtist,
   deleteSongByArtist,
+  addSongToPlaying,
 };

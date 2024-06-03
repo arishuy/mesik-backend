@@ -55,20 +55,25 @@ const searchByAll = async (keyword) => {
     } else {
       await KeyWord.updateOne({ keyword: keyword }, { $inc: { count: 1 } });
     }
-    const response = await Axios.get(
-      process.env.RECOMMEND_ENDPOINT + `/search?query=${keyword}`
-    );
     let song;
-    if (response.data.song_id) {
-      song = await Song.findById(response.data.song_id).populate({
-        path: "artist",
-        select: "user display_name",
-        populate: {
-          path: "user",
-          select: "first_name last_name photo_url",
-        },
-      });
+    try {
+      const response = await Axios.get(
+        process.env.RECOMMEND_ENDPOINT + `/search?query=${keyword}`
+      );
+      if (response.data.song_id) {
+        song = await Song.findById(response.data.song_id).populate({
+          path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        });
+      }
+    } catch (error) {
+      song = null;
     }
+
     return { songs, artists, albums, song };
   } catch (error) {
     throw error;

@@ -462,6 +462,31 @@ const deleteSongByArtist = async (user_id, song_id) => {
   await Song.deleteOne({ _id: song_id, artist: artist_id });
 };
 
+const addSongToPlaying = async (song_id) => {
+  // nhận vào 1 list các bài hát, tìm kiếm các bài hát có nghệ sĩ hoặc thể loại giống với bài hát hiện tại
+  const song = await Song.findById(song_id[0]);
+  if (!song) throw new ApiError(httpStatus.NOT_FOUND, "Song not found");
+  const artist = await Artist.findById(song.artist);
+  if (!artist) throw new ApiError(httpStatus.NOT_FOUND, "Artist not found");
+  const songs = await Song.find({
+    $or: [{ artist: artist._id }, { genre: song.genre }],
+    _id: { $nin: song_id },
+    isPremium: false,
+  })
+    .limit(song_id.length === 1 ? 9 : 1)
+    .lean()
+    .populate({
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    });
+
+  return songs;
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -480,4 +505,5 @@ export default {
   addLyricToSongByArtist,
   deleteSongByArtist,
   fetchAllSongs,
+  addSongToPlaying,
 };
