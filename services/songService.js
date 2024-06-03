@@ -463,28 +463,62 @@ const deleteSongByArtist = async (user_id, song_id) => {
 };
 
 const addSongToPlaying = async (song_id) => {
-  // nhận vào 1 list các bài hát, tìm kiếm các bài hát có nghệ sĩ hoặc thể loại giống với bài hát hiện tại
-  const song = await Song.findById(song_id[0]);
-  if (!song) throw new ApiError(httpStatus.NOT_FOUND, "Song not found");
-  const artist = await Artist.findById(song.artist);
-  if (!artist) throw new ApiError(httpStatus.NOT_FOUND, "Artist not found");
-  const songs = await Song.find({
-    $or: [{ artist: artist._id }, { genre: song.genre }],
-    _id: { $nin: song_id },
-    isPremium: false,
-  })
-    .limit(song_id.length === 1 ? 9 : 1)
-    .lean()
-    .populate({
-      path: "artist",
-      select: "user display_name",
-      populate: {
-        path: "user",
-        select: "first_name last_name photo_url",
-      },
-    });
+  try {
+    // Fetch the first song from the list to get the artist, genre, and region
+    const song = await Song.findById(song_id[0]);
+    if (!song) throw new Error("Song not found");
 
-  return songs;
+    // Fetch the artist details
+    const artist = await Artist.findById(song.artist);
+    if (!artist) throw new Error("Artist not found");
+
+    // Fetch songs with the same artist first
+    let songs = await Song.find({
+      artist: artist._id, // Match the artist
+      region: song.region, // Match the region
+      _id: { $nin: song_id }, // Exclude provided song IDs
+      isPremium: false, // Exclude premium songs
+    })
+      .limit(9) // Limit to 9 songs
+      .lean()
+      .populate({
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      });
+
+    // If there are less than 9 songs by artist, fetch additional songs by genre
+    if (songs.length < 9) {
+      const additionalSongs = await Song.find({
+        genre: song.genre, // Match the genre
+        artist: { $ne: artist._id }, // Exclude songs by the same artist
+        region: song.region, // Match the region
+        _id: { $nin: song_id }, // Exclude provided song IDs
+        isPremium: false, // Exclude premium songs
+      })
+        .limit(9 - songs.length) // Limit to remaining required songs
+        .lean()
+        .populate({
+          path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        });
+
+      // Concatenate additional songs with songs by artist
+      songs = songs.concat(additionalSongs);
+    }
+
+    return songs;
+  } catch (error) {
+    console.error("Error in addSongToPlaying:", error);
+    throw error; // Re-throw the error for further handling
+  }
 };
 
 export default {
