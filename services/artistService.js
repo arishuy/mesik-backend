@@ -74,6 +74,13 @@ const fetchArtists = async (page = 1, limit = 10) => {
   return pagination;
 };
 
+const fetchAllArtists = async () => {
+  const artists = await Artist.find()
+    .populate("user", "first_name last_name photo_url")
+    .sort({ display_name: -1 });
+  return artists;
+};
+
 const deleteArtistById = async (artist_id) => {
   await Artist.deleteOne({ _id: artist_id });
 };
@@ -94,4 +101,5 @@ export default {
   fetchArtistById,
   deleteArtistById,
   getRelatedArtists,
+  fetchAllArtists,
 };

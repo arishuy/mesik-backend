@@ -34,9 +34,13 @@ const get5Artists = async (req, res, next) => {
 const getArtists = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
-    const pagination = await artistService.fetchArtists(page, limit);
-
-    res.json({ pagination });
+    if (page && limit) {
+      const pagination = await artistService.fetchArtists(page, limit);
+      res.json({ pagination });
+    } else {
+      const artists = await artistService.fetchAllArtists();
+      res.json({ artists });
+    }
   } catch (error) {
     next(error);
   }
