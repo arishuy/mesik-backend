@@ -16,7 +16,9 @@ const fetchRequestById = async (request_id) => {
 
 const fetchRequests = async (page = 1, limit = 10) => {
   const pagination = await Request.paginate(
-    {},
+    {
+      user: { $ne: null },
+    },
     {
       sort: { createdAt: -1 },
       page,
