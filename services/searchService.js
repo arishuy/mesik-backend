@@ -89,7 +89,19 @@ const get5Keywords = async () => {
   }
 };
 
+const getRelatedKeywords = async (keyword) => {
+  try {
+    const keywords = await KeyWord.find({
+      keyword: { $regex: keyword, $options: "i" },
+    }).sort({ count: -1 });
+    return keywords;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default {
   searchByAll,
   get5Keywords,
+  getRelatedKeywords,
 };

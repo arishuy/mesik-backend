@@ -19,7 +19,18 @@ const get5Keywords = async (req, res, next) => {
   }
 };
 
+const getRelatedKeywords = async (req, res, next) => {
+  try {
+    const { keyword } = req.params;
+    const result = await searchService.getRelatedKeywords(keyword);
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   searchByAll,
   get5Keywords,
+  getRelatedKeywords,
 };
