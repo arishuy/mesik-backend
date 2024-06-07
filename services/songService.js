@@ -21,6 +21,7 @@ const createSong = async ({
   genre_id,
   region_id,
   artist_id,
+  featuredArtists = [],
   file = "",
   photo,
   play_count = 0,
@@ -43,6 +44,7 @@ const createSong = async ({
     genre: genre_id,
     region: region_id,
     artist: artist_id,
+    featuredArtists: featuredArtists,
     photo_url: response ? response.url : null,
     photo_public_id: response ? response.public_id : null,
     play_count: play_count,
@@ -53,6 +55,7 @@ const createSong = async ({
 
 const createSongByArtist = async ({
   title,
+  featuredArtists = [],
   release_date,
   duration,
   genre_id,
@@ -77,6 +80,7 @@ const createSongByArtist = async ({
   }
   const song = await Song.create({
     title: title,
+    featuredArtists: featuredArtists,
     release_date: release_date,
     duration: duration,
     file: link,
@@ -160,6 +164,14 @@ const fetch6SongsRelease = async () => {
         path: "user",
         select: "first_name last_name photo_url",
       },
+    })
+    .populate({
+      path: "featuredArtists",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
     });
 
   for (const song of songs)
@@ -173,6 +185,14 @@ const fetch6SongsRelease = async () => {
     .lean()
     .populate({
       path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    })
+    .populate({
+      path: "featuredArtists",
       select: "user display_name",
       populate: {
         path: "user",
@@ -194,6 +214,14 @@ const fetch6SongsRelease = async () => {
         path: "user",
         select: "first_name last_name photo_url",
       },
+    })
+    .populate({
+      path: "featuredArtists",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
     });
 
   for (const song of another_songs)
@@ -203,51 +231,88 @@ const fetch6SongsRelease = async () => {
 };
 
 const fetchRandomSongs = async () => {
-  const songs = await Song.aggregate([
-    { $sample: { size: 6 } }, // Lấy ngẫu nhiên 6 bản ghi
-    {
-      $lookup: {
-        from: "artists", // Tên của collection chứa thông tin về nghệ sĩ
-        localField: "artist", // Trường trong collection hiện tại để join
-        foreignField: "_id", // Trường trong collection artist để join
-        as: "artist", // Tên biến mới sau khi join
-      },
-    },
-    { $unwind: "$artist" }, // Giải nén mảng sau khi join
-    {
-      $lookup: {
-        from: "users", // Tên của collection chứa thông tin về users
-        localField: "artist.user", // Trường trong artist để join
-        foreignField: "_id", // Trường trong collection user để join
-        as: "artist.user", // Tên biến mới sau khi join
-      },
-    },
-    { $unwind: "$artist.user" }, // Giải nén mảng sau khi join
-    {
-      $project: {
-        title: 1, // Chỉ giữ lại trường title
-        photo_url: 1, // Chỉ giữ lại trường photo_url
-        play_count: 1, // Chỉ giữ lại trường play_count
-        file: 1, // Chỉ giữ lại trường file
-        duration: 1, // Chỉ giữ lại trường duration
-        isPremium: 1, // Chỉ giữ lại trường isPremium
-        artist: {
-          _id: "$artist._id", // Chỉ giữ lại trường _id
-          display_name: "$artist.display_name", // Chỉ giữ lại trường display_name
-          user: {
-            first_name: 1,
-            last_name: 1,
-            photo_url: 1,
-          },
+  try {
+    const songs = await Song.aggregate([
+      { $sample: { size: 6 } }, // Lấy ngẫu nhiên 6 bản ghi
+      {
+        $lookup: {
+          from: "artists",
+          localField: "artist",
+          foreignField: "_id",
+          as: "artist",
         },
       },
-    },
-  ]);
+      { $unwind: "$artist" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "artist.user",
+          foreignField: "_id",
+          as: "artist.user",
+        },
+      },
+      { $unwind: "$artist.user" },
+      {
+        $lookup: {
+          from: "artists",
+          localField: "featuredArtists",
+          foreignField: "_id",
+          as: "featuredArtists",
+        },
+      },
+      {
+        $unwind: {
+          path: "$featuredArtists",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "featuredArtists.user",
+          foreignField: "_id",
+          as: "featuredArtists.user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$featuredArtists.user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          artist: {
+            _id: 1,
+            display_name: 1,
+            user: {
+              first_name: 1,
+              last_name: 1,
+              photo_url: 1,
+            },
+          },
+          featuredArtists: 1,
+          play_count: 1,
+          duration: 1,
+          file: 1,
+          isPremium: 1,
+          photo_url: 1,
+          lyric: 1,
+        },
+      },
+    ]);
 
-  for (const song of songs)
-    song.play_count = await Listening.countDocuments({ song: song._id });
+    for (const song of songs) {
+      song.play_count = await Listening.countDocuments({ song: song._id });
+    }
 
-  return songs;
+    return songs;
+  } catch (error) {
+    console.error("Error in fetchRandomSongs:", error);
+    throw error;
+  }
 };
 
 const fetchSongByArtist = async (artist_id) => {
@@ -260,8 +325,15 @@ const fetchSongByArtist = async (artist_id) => {
         path: "user",
         select: "first_name last_name photo_url",
       },
+    })
+    .populate({
+      path: "featuredArtists",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
     });
-
   for (const song of songs)
     song.play_count = await Listening.countDocuments({ song: song._id });
   return songs;
@@ -277,6 +349,14 @@ const fetchSongByArtistPaginate = async (artist_id, page = 1, limit = 10) => {
       populate: [
         {
           path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        },
+        {
+          path: "featuredArtists",
           select: "user display_name",
           populate: {
             path: "user",
@@ -378,6 +458,7 @@ const updateSong = async ({
   region,
   artist,
   isPremium,
+  featuredArtists,
 }) => {
   const song = await Song.findByIdAndUpdate(
     song_id,
@@ -389,6 +470,7 @@ const updateSong = async ({
       region: region,
       artist: artist,
       isPremium: isPremium,
+      featuredArtists: featuredArtists,
     },
     { new: true }
   );
@@ -406,6 +488,7 @@ const updateSongByArtist = async ({
   region,
   artist,
   isPremium,
+  featuredArtists,
 }) => {
   const artist_id = await Artist.findOne({ user: user_id }).select("_id");
   if (!artist_id) {
@@ -422,6 +505,7 @@ const updateSongByArtist = async ({
   song.region = region;
   song.artist = artist;
   song.isPremium = isPremium;
+  song.featuredArtists = featuredArtists;
 
   await song.save();
   return song;
@@ -484,6 +568,14 @@ const addSongToPlaying = async (song_id) => {
       .populate({
         path: "artist",
         select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      })
+      .populate({
+        path: "featuredArtists", // Populate featuredArtists field
+        select: "user display_name", // Select fields from Artist model
         populate: {
           path: "user",
           select: "first_name last_name photo_url",

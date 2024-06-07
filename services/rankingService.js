@@ -29,14 +29,24 @@ const compareRanking = async () => {
       path: "songs",
       select:
         "title artist photo_url duration file play_count_daily isPremium lyric",
-      populate: {
-        path: "artist",
-        select: "user display_name",
-        populate: {
-          path: "user",
-          select: "first_name last_name photo_url",
+      populate: [
+        {
+          path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
         },
-      },
+        {
+          path: "featuredArtists",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        },
+      ],
     });
   // Lay bang xep hang hom qua
   const yesterdayRanking = await Ranking.findOne()
@@ -46,14 +56,24 @@ const compareRanking = async () => {
       path: "songs",
       select:
         "title artist photo_url duration file play_count_daily isPremium lyric",
-      populate: {
-        path: "artist",
-        select: "user",
-        populate: {
-          path: "user",
-          select: "first_name last_name photo_url",
+      populate: [
+        {
+          path: "artist",
+          select: "user",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
         },
-      },
+        {
+          path: "featuredArtists",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        },
+      ],
     });
 
   // tính toán sự thay đổi thứ hạng của từng bài hát ngày hôm nay so với ngày hôm qua
@@ -130,6 +150,34 @@ const vietnamRankings = async () => {
       $unwind: "$artist.user",
     },
     {
+      $lookup: {
+        from: "artists",
+        localField: "featuredArtists",
+        foreignField: "_id",
+        as: "featuredArtists",
+      },
+    },
+    {
+      $unwind: {
+        path: "$featuredArtists",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "featuredArtists.user",
+        foreignField: "_id",
+        as: "featuredArtists.user",
+      },
+    },
+    {
+      $unwind: {
+        path: "$featuredArtists.user",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         _id: 1,
         title: 1,
@@ -142,6 +190,7 @@ const vietnamRankings = async () => {
             photo_url: 1,
           },
         },
+        featuredArtists: 1,
         play_count: 1,
         duration: 1,
         file: 1,
@@ -163,6 +212,7 @@ const otherRegionRankings = async () => {
   if (!vn_region) {
     throw new Error("Region 'Việt Nam' not found");
   }
+
   // Aggregation pipeline for top songs in other regions
   const anotherTopSongs = await Song.aggregate([
     { $match: { region: { $ne: vn_region._id } } },
@@ -202,6 +252,34 @@ const otherRegionRankings = async () => {
       $unwind: "$artist.user",
     },
     {
+      $lookup: {
+        from: "artists",
+        localField: "featuredArtists",
+        foreignField: "_id",
+        as: "featuredArtists",
+      },
+    },
+    {
+      $unwind: {
+        path: "$featuredArtists",
+        preserveNullAndEmptyArrays: true, // Giữ lại bản ghi nếu không có kết quả từ lookup
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "featuredArtists.user",
+        foreignField: "_id",
+        as: "featuredArtists.user",
+      },
+    },
+    {
+      $unwind: {
+        path: "$featuredArtists.user",
+        preserveNullAndEmptyArrays: true, // Giữ lại bản ghi nếu không có kết quả từ lookup
+      },
+    },
+    {
       $project: {
         _id: 1,
         title: 1,
@@ -214,6 +292,7 @@ const otherRegionRankings = async () => {
             photo_url: 1,
           },
         },
+        featuredArtists: 1,
         play_count: 1,
         duration: 1,
         file: 1,
@@ -225,6 +304,7 @@ const otherRegionRankings = async () => {
     { $sort: { play_count: -1 } },
     { $limit: 10 },
   ]);
+
   return anotherTopSongs;
 };
 

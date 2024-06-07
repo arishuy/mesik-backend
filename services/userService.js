@@ -240,14 +240,24 @@ const getHistoryListen = async (user_id) => {
   const user = await User.findById(user_id).populate({
     path: "history_listen",
     select: "title photo_url file play_count artist duration isPremium lyric",
-    populate: {
-      path: "artist",
-      select: "user display_name",
-      populate: {
-        path: "user",
-        select: "first_name last_name photo_url",
+    populate: [
+      {
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
       },
-    },
+      {
+        path: "featuredArtists",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    ],
   });
   // Lấy 6 phần tử cuối cùng của mảng history_listen
   const historyListen = user.history_listen.slice(-6);
@@ -266,14 +276,24 @@ const getHistoryListenPagination = async (user_id, page = 1, limit = 10) => {
   const user = await User.findById(user_id).populate({
     path: "history_listen",
     select: "title photo_url file play_count artist duration isPremium lyric",
-    populate: {
-      path: "artist",
-      select: "user display_name",
-      populate: {
-        path: "user",
-        select: "first_name last_name photo_url",
+    populate: [
+      {
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
       },
-    },
+      {
+        path: "featuredArtists",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    ],
   });
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
@@ -311,14 +331,24 @@ const getLikedSongs = async (user_id) => {
   const user = await User.findById(user_id).populate({
     path: "liked_songs",
     select: "title photo_url file play_count artist duration isPremium lyric",
-    populate: {
-      path: "artist",
-      select: "user display_name",
-      populate: {
-        path: "user",
-        select: "first_name last_name photo_url",
+    populate: [
+      {
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
       },
-    },
+      {
+        path: "featuredArtists",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    ],
   });
 
   return user.liked_songs;

@@ -9,6 +9,7 @@ const createSong = async (req, res, next) => {
       genre_id,
       region_id,
       artist_id,
+      featuredArtists,
       play_count,
     } = req.body;
     const photo = req.files.photo[0];
@@ -20,6 +21,7 @@ const createSong = async (req, res, next) => {
       genre_id,
       region_id,
       artist_id,
+      featuredArtists,
       file,
       photo,
       play_count,
@@ -33,12 +35,20 @@ const createSong = async (req, res, next) => {
 const createSongByArtist = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { title, release_date, duration, genre_id, region_id, play_count } =
-      req.body;
+    const {
+      title,
+      featuredArtists,
+      release_date,
+      duration,
+      genre_id,
+      region_id,
+      play_count,
+    } = req.body;
     const photo = req.files.photo[0];
     const file = req.files.file[0].buffer;
     const song = await songService.createSongByArtist({
       title,
+      featuredArtists,
       release_date,
       duration,
       genre_id,
@@ -164,8 +174,16 @@ const getLyricsFromSong = async (req, res, next) => {
 const updateSong = async (req, res, next) => {
   try {
     const { song_id } = req.params;
-    const { title, release_date, duration, genre, region, artist, isPremium } =
-      req.body;
+    const {
+      title,
+      release_date,
+      duration,
+      genre,
+      region,
+      artist,
+      isPremium,
+      featuredArtists,
+    } = req.body;
     const song = await songService.updateSong({
       song_id,
       title,
@@ -175,6 +193,7 @@ const updateSong = async (req, res, next) => {
       region,
       artist,
       isPremium,
+      featuredArtists,
     });
     res.json({ song });
   } catch (error) {
@@ -186,8 +205,16 @@ const updateSongByArtist = async (req, res, next) => {
   try {
     const { song_id } = req.params;
     const user_id = req.authData.user._id;
-    const { title, release_date, duration, genre, region, artist, isPremium } =
-      req.body;
+    const {
+      title,
+      release_date,
+      duration,
+      genre,
+      region,
+      artist,
+      isPremium,
+      featuredArtists,
+    } = req.body;
     const result = await songService.updateSongByArtist({
       user_id,
       song_id,
@@ -198,6 +225,7 @@ const updateSongByArtist = async (req, res, next) => {
       region,
       artist,
       isPremium,
+      featuredArtists,
     });
     res.json({ result });
   } catch (error) {

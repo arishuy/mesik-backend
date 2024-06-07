@@ -28,14 +28,24 @@ const fetchArtistById = async (artist_id) => {
       },
     })
     .limit(6);
-  const songs = await Song.find({ artist: artist_id }).populate({
-    path: "artist",
-    select: "user",
-    populate: {
-      path: "user",
-      select: "first_name last_name photo_url",
-    },
-  });
+  const songs = await Song.find({ artist: artist_id })
+    .populate({
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    })
+    .populate({
+      path: "featuredArtists",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+    });
+
   for (const song of songs)
     song.play_count = await Listening.countDocuments({ song: song._id });
 

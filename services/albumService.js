@@ -21,14 +21,24 @@ const fetchAlbumById = async (album_id) => {
     .populate({
       path: "songs",
       select: "title photo_url file duration artist createdAt isPremium lyric",
-      populate: {
-        path: "artist",
-        select: "user display_name",
-        populate: {
-          path: "user",
-          select: "first_name last_name photo_url",
+      populate: [
+        {
+          path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
         },
-      },
+        {
+          path: "featuredArtists",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
+        },
+      ],
     })
     .populate({
       path: "artist",
@@ -111,14 +121,16 @@ const getFamousAlbums = async () => {
     .populate({
       path: "songs",
       select: "title photo_url file duration artist isPremium lyric",
-      populate: {
-        path: "artist",
-        select: "user display_name",
-        populate: {
-          path: "user",
-          select: "first_name last_name photo_url",
+      populate: [
+        {
+          path: "artist",
+          select: "user display_name",
+          populate: {
+            path: "user",
+            select: "first_name last_name photo_url",
+          },
         },
-      },
+      ],
     });
   return albums;
 };

@@ -14,6 +14,14 @@ const searchByAll = async (keyword) => {
           select: "first_name last_name photo_url",
         },
       })
+      .populate({
+        path: "featuredArtists", // Populate featuredArtists field
+        select: "user display_name", // Select fields from Artist model
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      })
       .select("-__v");
 
     for (const song of songs)

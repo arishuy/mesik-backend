@@ -25,15 +25,26 @@ const createPlaylistWithSongs = async ({ title, user_id, song_id }) => {
 const fetchPlaylistById = async (playlist_id) => {
   const playlist = await Playlist.findById(playlist_id).populate({
     path: "songs",
-    select: "title artist photo_url duration file isPremium lyric",
-    populate: {
-      path: "artist",
-      select: "user display_name",
-      populate: {
-        path: "user",
-        select: "first_name last_name photo_url",
+    select:
+      "title artist featuredArtists photo_url duration file isPremium lyric",
+    populate: [
+      {
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
       },
-    },
+      {
+        path: "featuredArtists",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    ],
   });
   return playlist;
 };

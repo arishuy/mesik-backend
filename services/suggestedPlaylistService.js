@@ -11,14 +11,24 @@ const getSuggestedPlaylists = async (user_id) => {
       populate: {
         path: "songs",
         select: "title artist photo_url duration file isPremium lyric",
-        populate: {
-          path: "artist",
-          select: "user display_name",
-          populate: {
-            path: "user",
-            select: "first_name last_name photo_url",
+        populate: [
+          {
+            path: "artist",
+            select: "user display_name",
+            populate: {
+              path: "user",
+              select: "first_name last_name photo_url",
+            },
           },
-        },
+          {
+            path: "featuredArtists",
+            select: "user display_name",
+            populate: {
+              path: "user",
+              select: "first_name last_name photo_url",
+            },
+          },
+        ],
       },
     })
     .sort({ createdAt: -1 })
