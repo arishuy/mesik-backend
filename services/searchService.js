@@ -14,8 +14,7 @@ const searchByAll = async (keyword) => {
           select: "first_name last_name photo_url",
         },
       })
-      .select("-__v")
-      .limit(6);
+      .select("-__v");
 
     for (const song of songs)
       song.play_count = await Listening.countDocuments({ song: song._id });
@@ -55,25 +54,27 @@ const searchByAll = async (keyword) => {
     } else {
       await KeyWord.updateOne({ keyword: keyword }, { $inc: { count: 1 } });
     }
-    let song;
-    try {
-      const response = await Axios.get(
-        process.env.RECOMMEND_ENDPOINT + `/search?query=${keyword}`
-      );
-      if (response.data.song_id) {
-        song = await Song.findById(response.data.song_id).populate({
-          path: "artist",
-          select: "user display_name",
-          populate: {
-            path: "user",
-            select: "first_name last_name photo_url",
-          },
-        });
+    let song = null;
+    const keyword_length = keyword.split(" ").length;
+    if (keyword_length > 6) {
+      try {
+        const response = await Axios.get(
+          process.env.RECOMMEND_ENDPOINT + `/search?query=${keyword}`
+        );
+        if (response.data.song_id) {
+          song = await Song.findById(response.data.song_id).populate({
+            path: "artist",
+            select: "user display_name",
+            populate: {
+              path: "user",
+              select: "first_name last_name photo_url",
+            },
+          });
+        }
+      } catch (error) {
+        song = null;
       }
-    } catch (error) {
-      song = null;
     }
-
     return { songs, artists, albums, song };
   } catch (error) {
     throw error;
