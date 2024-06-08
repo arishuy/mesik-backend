@@ -44,12 +44,10 @@ const fetchArtistById = async (artist_id) => {
         path: "user",
         select: "first_name last_name photo_url",
       },
-    });
+    })
+    .limit(6);
 
-  for (const song of songs)
-    song.play_count = await Listening.countDocuments({ song: song._id });
-
-  artist.songs = songs.sort((a, b) => b.play_count - a.play_count).slice(0, 6);
+  artist.songs = songs;
 
   return artist;
 };

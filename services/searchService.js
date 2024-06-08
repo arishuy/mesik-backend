@@ -24,9 +24,6 @@ const searchByAll = async (keyword) => {
       })
       .select("-__v");
 
-    for (const song of songs)
-      song.play_count = await Listening.countDocuments({ song: song._id });
-
     // Tìm kiếm nghệ sĩ
     const artists = await Artist.find({
       display_name: { $regex: keyword, $options: "i" },

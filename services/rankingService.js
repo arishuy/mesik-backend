@@ -112,96 +112,25 @@ const vietnamRankings = async () => {
   }
 
   // Aggregation pipeline for top songs in Vietnam
-  const vnTopSongs = await Song.aggregate([
-    { $match: { region: vn_region._id } },
-    {
-      $lookup: {
-        from: "listenings",
-        localField: "_id",
-        foreignField: "song",
-        as: "play_count_docs",
+  const vnTopSongs = await Song.find({ region: vn_region._id })
+    .sort({ play_count: -1 })
+    .limit(10)
+    .populate({
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
       },
-    },
-    {
-      $addFields: {
-        play_count: { $size: "$play_count_docs" },
+    })
+    .populate({
+      path: "featuredArtists",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
       },
-    },
-    {
-      $lookup: {
-        from: "artists",
-        localField: "artist",
-        foreignField: "_id",
-        as: "artist",
-      },
-    },
-    {
-      $unwind: "$artist",
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "artist.user",
-        foreignField: "_id",
-        as: "artist.user",
-      },
-    },
-    {
-      $unwind: "$artist.user",
-    },
-    {
-      $lookup: {
-        from: "artists",
-        localField: "featuredArtists",
-        foreignField: "_id",
-        as: "featuredArtists",
-      },
-    },
-    {
-      $unwind: {
-        path: "$featuredArtists",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "featuredArtists.user",
-        foreignField: "_id",
-        as: "featuredArtists.user",
-      },
-    },
-    {
-      $unwind: {
-        path: "$featuredArtists.user",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        title: 1,
-        artist: {
-          _id: 1,
-          display_name: 1,
-          user: {
-            first_name: 1,
-            last_name: 1,
-            photo_url: 1,
-          },
-        },
-        featuredArtists: 1,
-        play_count: 1,
-        duration: 1,
-        file: 1,
-        isPremium: 1,
-        photo_url: 1,
-        lyric: 1,
-      },
-    },
-    { $sort: { play_count: -1 } },
-    { $limit: 10 },
-  ]);
+    });
 
   return vnTopSongs;
 };
@@ -214,96 +143,25 @@ const otherRegionRankings = async () => {
   }
 
   // Aggregation pipeline for top songs in other regions
-  const anotherTopSongs = await Song.aggregate([
-    { $match: { region: { $ne: vn_region._id } } },
-    {
-      $lookup: {
-        from: "listenings",
-        localField: "_id",
-        foreignField: "song",
-        as: "play_count_docs",
+  const anotherTopSongs = await Song.find({ region: { $ne: vn_region._id } })
+    .sort({ play_count: -1 })
+    .limit(10)
+    .populate({
+      path: "artist",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
       },
-    },
-    {
-      $addFields: {
-        play_count: { $size: "$play_count_docs" },
+    })
+    .populate({
+      path: "featuredArtists",
+      select: "user display_name",
+      populate: {
+        path: "user",
+        select: "first_name last_name photo_url",
       },
-    },
-    {
-      $lookup: {
-        from: "artists",
-        localField: "artist",
-        foreignField: "_id",
-        as: "artist",
-      },
-    },
-    {
-      $unwind: "$artist",
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "artist.user",
-        foreignField: "_id",
-        as: "artist.user",
-      },
-    },
-    {
-      $unwind: "$artist.user",
-    },
-    {
-      $lookup: {
-        from: "artists",
-        localField: "featuredArtists",
-        foreignField: "_id",
-        as: "featuredArtists",
-      },
-    },
-    {
-      $unwind: {
-        path: "$featuredArtists",
-        preserveNullAndEmptyArrays: true, // Giữ lại bản ghi nếu không có kết quả từ lookup
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "featuredArtists.user",
-        foreignField: "_id",
-        as: "featuredArtists.user",
-      },
-    },
-    {
-      $unwind: {
-        path: "$featuredArtists.user",
-        preserveNullAndEmptyArrays: true, // Giữ lại bản ghi nếu không có kết quả từ lookup
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        title: 1,
-        artist: {
-          _id: 1,
-          display_name: 1,
-          user: {
-            first_name: 1,
-            last_name: 1,
-            photo_url: 1,
-          },
-        },
-        featuredArtists: 1,
-        play_count: 1,
-        duration: 1,
-        file: 1,
-        isPremium: 1,
-        photo_url: 1,
-        lyric: 1,
-      },
-    },
-    { $sort: { play_count: -1 } },
-    { $limit: 10 },
-  ]);
+    });
 
   return anotherTopSongs;
 };

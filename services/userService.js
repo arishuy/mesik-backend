@@ -262,10 +262,6 @@ const getHistoryListen = async (user_id) => {
   // Lấy 6 phần tử cuối cùng của mảng history_listen
   const historyListen = user.history_listen.slice(-6);
 
-  // Đếm số lần nghe của mỗi bài hát
-  for (let song of historyListen) {
-    song.play_count = await Listening.countDocuments({ song: song._id });
-  }
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }

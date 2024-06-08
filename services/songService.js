@@ -100,8 +100,6 @@ const fetchSongById = async (song_id) => {
     path: "artist",
     select: "user display_name",
   });
-  const playCount = await Listening.countDocuments({ song: song_id });
-  song.play_count = playCount;
   return song;
 };
 
@@ -131,10 +129,6 @@ const fetchSongs = async (page = 1, limit = 10, name = "", genre = "all") => {
       },
     }
   );
-  for (const song of pagination.songs) {
-    const playCount = await Listening.countDocuments({ song: song._id });
-    song.play_count = playCount;
-  }
   return pagination;
 };
 
@@ -174,9 +168,6 @@ const fetch6SongsRelease = async () => {
       },
     });
 
-  for (const song of songs)
-    song.play_count = await Listening.countDocuments({ song: song._id });
-
   const vn_region = await Region.findOne({ name: "Việt Nam" });
 
   const songs_vn = await Song.find({ region: vn_region._id })
@@ -200,9 +191,6 @@ const fetch6SongsRelease = async () => {
       },
     });
 
-  for (const song of songs_vn)
-    song.play_count = await Listening.countDocuments({ song: song._id });
-
   const another_songs = await Song.find({ region: { $ne: vn_region._id } })
     .sort({ release_date: -1 })
     .limit(9)
@@ -223,9 +211,6 @@ const fetch6SongsRelease = async () => {
         select: "first_name last_name photo_url",
       },
     });
-
-  for (const song of another_songs)
-    song.play_count = await Listening.countDocuments({ song: song._id });
 
   return { songs, songs_vn, another_songs };
 };
@@ -304,10 +289,6 @@ const fetchRandomSongs = async () => {
       },
     ]);
 
-    for (const song of songs) {
-      song.play_count = await Listening.countDocuments({ song: song._id });
-    }
-
     return songs;
   } catch (error) {
     console.error("Error in fetchRandomSongs:", error);
@@ -334,8 +315,6 @@ const fetchSongByArtist = async (artist_id) => {
         select: "first_name last_name photo_url",
       },
     });
-  for (const song of songs)
-    song.play_count = await Listening.countDocuments({ song: song._id });
   return songs;
 };
 
@@ -424,6 +403,10 @@ const incresasePlayCount = async (user_id, song_id) => {
     user: user_id,
     song: song_id,
   });
+
+  const song = await Song.findById(song_id);
+  song.play_count += 1;
+  await song.save();
   return listening;
 };
 
