@@ -20,7 +20,8 @@ const fetchAlbumById = async (album_id) => {
   const album = await Album.findById(album_id)
     .populate({
       path: "songs",
-      select: "title photo_url file duration artist createdAt isPremium lyric",
+      select:
+        "title photo_url file duration artist createdAt isPremium lyric release_date",
       populate: [
         {
           path: "artist",
