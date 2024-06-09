@@ -266,6 +266,16 @@ const addSongToPlaying = async (req, res, next) => {
   }
 };
 
+const fetchNewRelease = async (req, res, next) => {
+  try {
+    const { type } = req.query;
+    const result = await songService.fetchNewRelease(type);
+    res.json({ result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -283,4 +293,5 @@ export default {
   addLyricToSongByArtist,
   deleteSongByArtist,
   addSongToPlaying,
+  fetchNewRelease,
 };

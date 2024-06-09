@@ -7,6 +7,7 @@ import {
   Playlist,
   TokenizedLyrics,
   Region,
+  Album,
 } from "../models/index.js";
 import cloudinaryService from "./cloudinaryService.js";
 import { uploadAudio } from "../utils/aws.js";
@@ -605,6 +606,71 @@ const addSongToPlaying = async (song_id) => {
   }
 };
 
+const fetchNewRelease = async (type) => {
+  if (type === "song")
+    return await Song.find({})
+      .sort({ release_date: -1 })
+      .limit(100)
+      .populate({
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      })
+      .populate({
+        path: "featuredArtists",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      })
+      .populate({
+        path: "region",
+        select: "name",
+      });
+  else if (type === "album")
+    return await Album.find({
+      artist: { $ne: null },
+    })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .populate({
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      })
+      .populate({
+        path: "songs",
+        select:
+          "title photo_url file duration artist createdAt isPremium lyric release_date",
+        populate: [
+          {
+            path: "artist",
+            select: "user display_name",
+            populate: {
+              path: "user",
+              select: "first_name last_name photo_url",
+            },
+          },
+          {
+            path: "featuredArtists",
+            select: "user display_name",
+            populate: {
+              path: "user",
+              select: "first_name last_name photo_url",
+            },
+          },
+        ],
+      });
+  else return [];
+};
+
 export default {
   createSong,
   createSongByArtist,
@@ -624,4 +690,5 @@ export default {
   deleteSongByArtist,
   fetchAllSongs,
   addSongToPlaying,
+  fetchNewRelease,
 };

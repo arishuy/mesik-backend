@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get("/artist/:artist_id", controller.fetchSongByArtist);
 router.get("/release", controller.fetch5SongsRelease);
+router.get("/new-release", controller.fetchNewRelease);
 router.get("/random", controller.fetchRandomSongs);
 router.get("/lyric/:song_id", controller.getLyricsFromSong);
 router.post("/next-play", controller.addSongToPlaying);
