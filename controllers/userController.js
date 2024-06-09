@@ -165,10 +165,11 @@ const updateSeenNotification = async (req, res, next) => {
 const getHistoryListen = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { limit } = req.query;
+    const { page, limit } = req.query;
     if (limit) {
       const songs = await userService.getHistoryListenPagination(
         user_id,
+        page,
         limit
       );
       return res.json({ songs });

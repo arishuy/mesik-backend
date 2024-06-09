@@ -356,17 +356,24 @@ const fetchSongByArtistPaginate = async (artist_id, page = 1, limit = 10) => {
 const incresasePlayCount = async (user_id, song_id) => {
   // Fetch user data
   const user = await User.findById(user_id);
+  if (!user) {
+    throw new Error("User not found");
+  }
   const length_before = user.history_listen.length;
   // Check if the song is already in the history_listen array
+
   const songIndex = user.history_listen.indexOf(song_id);
+
   if (songIndex !== -1) {
-    // Remove the song from its current position
+    // If song is already in history, remove it
     user.history_listen.splice(songIndex, 1);
-    user.history_listen.push(song_id);
-  } else {
-    // If song is not in history, add it
-    user.history_listen.push(song_id);
   }
+
+  // Add song to the top of the history
+  user.history_listen.unshift(song_id);
+
+  // Save the updated user document
+  await user.save();
 
   const length_after = user.history_listen.length;
   if (length_after > length_before) {
@@ -393,12 +400,6 @@ const incresasePlayCount = async (user_id, song_id) => {
         });
     }
   }
-
-  // Update user's history_listen array
-  await User.findByIdAndUpdate(user_id, {
-    $set: { history_listen: user.history_listen },
-  });
-
   // Update song's play count
   const listening = await Listening.create({
     user: user_id,
