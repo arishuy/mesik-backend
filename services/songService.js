@@ -540,42 +540,74 @@ const addSongToPlaying = async (song_id) => {
     const artist = await Artist.findById(song.artist);
     if (!artist) throw new Error("Artist not found");
 
-    // Fetch songs with the same artist first
-    // let songs = await Song.find({
-    //   artist: artist._id, // Match the artist
-    //   region: song.region, // Match the region
-    //   _id: { $nin: song_id }, // Exclude provided song IDs
-    //   isPremium: false, // Exclude premium songs
-    // })
-    //   .limit(9) // Limit to 9 songs
-    //   .lean()
-    //   .populate({
-    //     path: "artist",
-    //     select: "user display_name",
-    //     populate: {
-    //       path: "user",
-    //       select: "first_name last_name photo_url",
-    //     },
-    //   })
-    //   .populate({
-    //     path: "featuredArtists", // Populate featuredArtists field
-    //     select: "user display_name", // Select fields from Artist model
-    //     populate: {
-    //       path: "user",
-    //       select: "first_name last_name photo_url",
-    //     },
-    //   });
+    let songs = await Song.find({
+      artist: artist._id, // Match the artist
+      region: song.region, // Match the region
+      _id: { $nin: song_id }, // Exclude provided song IDs
+      isPremium: false, // Exclude premium songs
+    })
+      .limit(9) // Limit to 9 songs
+      .lean()
+      .populate({
+        path: "artist",
+        select: "user display_name",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      })
+      .populate({
+        path: "featuredArtists", // Populate featuredArtists field
+        select: "user display_name", // Select fields from Artist model
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      });
 
     // // If there are less than 9 songs by artist, fetch additional songs by genre
     // if (songs.length < 9) {
-    let songs = [];
-    // khi thỏa mãn điều kiện, sẽ gọi đến API bên ngoài để lấy về 5 bài hát tương tự và thêm chúng vào playlist gợi ý
-    try {
-      const res = await Axios.get(
-        process.env.RECOMMEND_ENDPOINT + `/recommend?song_id=${song_id}`
-      );
-      let list_songs = res.data.map((song) => song._id);
-      songs = await Song.find({ _id: { $in: list_songs } })
+    // let songs = [];
+    // // khi thỏa mãn điều kiện, sẽ gọi đến API bên ngoài để lấy về 5 bài hát tương tự và thêm chúng vào playlist gợi ý
+    // try {
+    //   const res = await Axios.get(
+    //     process.env.RECOMMEND_ENDPOINT + `/recommend?song_id=${song_id}`
+    //   );
+    //   let list_songs = res.data.map((song) => song._id);
+    //   songs = await Song.find({ _id: { $in: list_songs } })
+    //     .lean()
+    //     .populate({
+    //       path: "artist",
+    //       select: "user display_name",
+    //       populate: {
+    //         path: "user",
+    //         select: "first_name last_name photo_url",
+    //       },
+    //     })
+    //     .populate({
+    //       path: "featuredArtists",
+    //       select: "user display_name",
+    //       populate: {
+    //         path: "user",
+    //         select: "first_name last_name photo_url",
+    //       },
+    //     });
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
+    // Concatenate additional songs with songs by artist
+    // songs = songs.concat(additionalSongs);
+    // If there are less than 9 songs by artist, fetch additional songs by genre
+    if (songs.length < 9) {
+      const additionalSongs = await Song.find({
+        genre: song.genre, // Match the genre
+        artist: { $ne: artist._id }, // Exclude songs by the same artist
+        region: song.region, // Match the region
+        _id: { $nin: song_id }, // Exclude provided song IDs
+        isPremium: false, // Exclude premium songs
+      })
+        .limit(9 - songs.length) // Limit to remaining required songs
         .lean()
         .populate({
           path: "artist",
@@ -584,21 +616,11 @@ const addSongToPlaying = async (song_id) => {
             path: "user",
             select: "first_name last_name photo_url",
           },
-        })
-        .populate({
-          path: "featuredArtists",
-          select: "user display_name",
-          populate: {
-            path: "user",
-            select: "first_name last_name photo_url",
-          },
         });
-    } catch (error) {
-      console.log(error);
-    }
 
-    // Concatenate additional songs with songs by artist
-    // songs = songs.concat(additionalSongs);
+      // Concatenate additional songs with songs by artist
+      songs = songs.concat(additionalSongs);
+    }
     return songs;
   } catch (error) {
     console.error("Error in addSongToPlaying:", error);
