@@ -112,7 +112,7 @@ const getTotalDepositAmount = async () => {
   const result = await Transaction.aggregate([
     {
       $match: {
-        transaction_type: transaction_types.DEPOSIT,
+        transaction_type: transaction_types.BUY_PREMIUM,
         transaction_status: transaction_status.DONE,
       },
     },
