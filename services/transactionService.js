@@ -1,4 +1,9 @@
-import { Transaction, User, JobRequest } from "../models/index.js";
+import {
+  Transaction,
+  User,
+  JobRequest,
+  PremiumPackage,
+} from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 import {
@@ -28,7 +33,7 @@ const createDeposit = async ({ user_id, amount }) => {
   const transaction = await Transaction.create({
     user: user_id,
     amount: amount,
-    transaction_type: transaction_types.DEPOSIT,
+    transaction_type: transaction_types.BUY_PREMIUM,
     transaction_status: transaction_status.PROCESSING,
   });
 
@@ -98,13 +103,31 @@ const createPayment = async ({ user_id, job_request_id }) => {
 
 const handleSuccessDeposit = async (transaction) => {
   const user = await User.findById(transaction.user);
-  if (!user) return;
-  if (transaction.transaction_status !== transaction_status.DONE) return;
-  await user.updateOne({
-    balance: user.balance + transaction.amount,
+  const premiumPackage = await PremiumPackage.findOne({
+    price: transaction.amount,
   });
+  if (!user) return;
+  if (premiumPackage) {
+    // Ensure premiumStartDate is initialized to a valid date
+    if (!user.premiumStartDate) {
+      user.premiumStartDate = new Date();
+    } else {
+      user.premiumStartDate = new Date(user.premiumStartDate);
+    }
+    if (!user.premiumEndDate) user.premiumEndDate = new Date();
+    // Calculate premiumEndDate from premiumStartDate
+    let premiumEndDate = moment(user.premiumEndDate);
+    // Add the duration to premiumEndDate
+    if (premiumPackage.durationMonths) {
+      premiumEndDate.add(premiumPackage.durationMonths, "months");
+    } else console.log("premiumPackage.durationMonths is not defined");
 
-  pusherService.updateBalance(user._id, user.balance + transaction.amount);
+    // Assign the calculated date to user.premiumEndDate
+    user.premiumEndDate = premiumEndDate.toDate();
+    await user.save();
+  }
+
+  pusherService.updatePremium(user._id, user.premiumEndDate);
 };
 
 const executePayment = async ({ user_id, transaction_id }) => {
@@ -231,16 +254,6 @@ const fetchTransactionsByUserId = async (
         path: "user",
         select: "first_name last_name gender phone address photo_url email",
       },
-      {
-        path: "expert",
-        select: "first_name last_name gender phone address photo_url email",
-      },
-      {
-        path: "job_request",
-        populate: {
-          path: "major",
-        },
-      },
     ],
     page,
     limit,
@@ -339,14 +352,14 @@ const handleVnpayReturn = async (req) => {
       // test
       transaction.transaction_status = transaction_status.CANCELED;
       await transaction.save();
-      return { message: "Transaction failed" };
+      return { message: "Transaction failed", status: "CANCELED" };
     }
     // test
     transaction.transaction_status = transaction_status.DONE;
     await transaction.save();
     await handleSuccessDeposit(transaction);
     //
-    return { message: "Transaction successful" };
+    return { message: "Transaction successful", status: "DONE" };
   }
 
   return { message: "Error" };

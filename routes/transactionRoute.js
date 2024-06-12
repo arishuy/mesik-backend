@@ -12,7 +12,7 @@ router.get("", auth, checkRole([roles.ADMIN]), controller.getAllTransactions);
 router.post(
   "/deposit",
   auth,
-  checkRole([roles.USER]),
+  checkRole([roles.USER, roles.ARTIST]),
   trimRequest.all,
   validate(schemas.depositSchema),
   controller.createDeposit

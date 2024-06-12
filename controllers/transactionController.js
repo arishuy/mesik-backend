@@ -30,8 +30,13 @@ const createDeposit = async (req, res, next) => {
 
 const vnpayReturn = async (req, res, next) => {
   try {
-    await transactionService.handleVnpayReturn(req);
-    res.redirect(process.env.DEPOSIT_REDIRECT_URL);
+    const data = await transactionService.handleVnpayReturn(req);
+    if (data.status === "CANCELED") {
+      return res.redirect(process.env.DEPOSIT_CANCEL_URL);
+    }
+    if (data.status === "DONE") {
+      return res.redirect(process.env.DEPOSIT_REDIRECT_URL);
+    }
   } catch (error) {
     next(error);
   }
