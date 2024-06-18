@@ -31,7 +31,12 @@ const fetchGenres = async (page = 1, limit = 10) => {
 };
 
 const deleteGenreById = async (genre_id) => {
-  await Genre.deleteOne({ _id: genre_id });
+  const genre = await Genre.findById(genre_id);
+  if (!genre) {
+    throw new Error("Genre not found");
+  }
+  await genre.delete();
+  // await Genre.deleteOne({ _id: genre_id });
 };
 
 const updateGenreById = async (genre_id, { name, description }) => {
