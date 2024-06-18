@@ -29,6 +29,7 @@ const fetchArtistById = async (artist_id) => {
     })
     .limit(6);
   const songs = await Song.find({ artist: artist_id })
+    .sort({ play_count: -1 })
     .populate({
       path: "artist",
       select: "user display_name",
