@@ -4,15 +4,18 @@ const calculateAndSaveDailyListenings = async () => {
   try {
     // Xác định ngày hiện tại
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
+    const utcPlus7Offset = 7 * 60 * 60 * 1000;
+    const startOfToday = new Date(today.getTime() - utcPlus7Offset);
+    const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
 
     // Tính số lượt nghe của mỗi bài hát trong ngày hiện tại
     const listenings = await Listening.aggregate([
       {
         $match: {
           listen_at: {
-            $gte: today, // Lấy từ 00:00:00 hôm nay
-            $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000), // Đến 00:00:00 ngày mai
+            $gte: startOfToday, // Lấy từ 00:00:00 hôm nay theo UTC+7
+            $lt: endOfToday, // Đến 00:00:00 ngày mai theo UTC+7
           },
         },
       },
