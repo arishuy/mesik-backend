@@ -29,11 +29,11 @@ const createSong = async ({
 }) => {
   let response;
   let link;
-  if (file) {
-    // name = title + current timestamp
-    const name = title + Date.now();
-    link = await uploadAudio(name, file);
-  }
+  // if (file) {
+  // name = title + current timestamp
+  // const name = title + Date.now();
+  // link = await uploadAudio(name, file);
+  // }
   if (photo) {
     response = await cloudinaryService.upload(photo);
   }
@@ -41,7 +41,7 @@ const createSong = async ({
     title: title,
     release_date: release_date,
     duration: duration,
-    file: link,
+    file: file,
     genre: genre_id,
     region: region_id,
     artist: artist_id,

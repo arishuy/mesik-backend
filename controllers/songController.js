@@ -9,11 +9,11 @@ const createSong = async (req, res, next) => {
       genre_id,
       region_id,
       artist_id,
+      file,
       featuredArtists,
       play_count,
     } = req.body;
-    const photo = req.files.photo[0];
-    const file = req.files.file[0].buffer;
+    const photo = req.file;
     const song = await songService.createSong({
       title,
       release_date,
@@ -42,10 +42,11 @@ const createSongByArtist = async (req, res, next) => {
       duration,
       genre_id,
       region_id,
+      file,
       play_count,
     } = req.body;
-    const photo = req.files.photo[0];
-    const file = req.files.file[0].buffer;
+    const photo = req.file;
+    // const file = req.files.file[0].buffer;
     const song = await songService.createSongByArtist({
       title,
       featuredArtists,

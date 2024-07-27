@@ -29,10 +29,7 @@ router.post(
   "",
   auth,
   checkRole([roles.ADMIN]),
-  uploadMulti.fields([
-    { name: "file", maxCount: 1 },
-    { name: "photo", maxCount: 1 },
-  ]),
+  uploadImage.single("photo"),
   trimRequest.all,
   controller.createSong
 );
@@ -40,10 +37,7 @@ router.post(
   "/upload-by-artist",
   auth,
   checkRole([roles.ARTIST]),
-  uploadMulti.fields([
-    { name: "file", maxCount: 1 },
-    { name: "photo", maxCount: 1 },
-  ]),
+  uploadImage.single("photo"),
   trimRequest.all,
   controller.createSongByArtist
 );
